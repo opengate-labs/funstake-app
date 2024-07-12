@@ -9,7 +9,9 @@
       "@/consts/*": ["consts/*"],
       "@/services/*": ["services/*"],
       "@/theme/*": ["theme/*"],
-      "@/hooks/*": ["hooks/*"]
+      "@/hooks/*": ["hooks/*"],
+      "@/assets/*": ["assets/*"],
+      "@/config": ["config.js"]
     }
   }
 }
