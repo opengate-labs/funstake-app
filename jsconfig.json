@@ -8,6 +8,7 @@
       "@/pages/*": ["pages/*"],
       "@/consts/*": ["consts/*"],
       "@/services/*": ["services/*"],
+      "@/actions/*": ["actions/*"],
       "@/theme/*": ["theme/*"],
       "@/hooks/*": ["hooks/*"],
       "@/assets/*": ["assets/*"],
