@@ -1,5 +1,3 @@
-import { utils } from 'near-api-js'
-
 /**
  * Removes leading zeroes from an input
  * @param value A value that may contain leading zeroes

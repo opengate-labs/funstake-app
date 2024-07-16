@@ -11,20 +11,20 @@ export const ONE_YOCTO_DEPOSIT = '1'
 
 export const useNear = () => {
   const { isLoadingWallet, selector, modal, accountId } = useWalletSelector()
-  const signIn = async () => {
-    modal.show()
-    // const isTelegram = !!window.Telegram?.WebApp.initData
 
-    // if (isTelegram) {
-    //   const wallet = await selector.wallet()
-    //   wallet.signIn({
-    //     contractId: Contract,
-    //     callbackUrl: '#loginSuccess',
-    //     methodNames: ['claim', 'add_project'],
-    //   })
-    // } else {
-    //   modal.show()
-    // }
+  const signIn = async () => {
+    const isTelegram = !!window.Telegram?.WebApp.initData
+
+    if (isTelegram) {
+      const wallet = await selector.wallet()
+      wallet.signIn({
+        contractId: Contract,
+        callbackUrl: '#loginSuccess',
+        methodNames: ['claim', 'add_project'],
+      })
+    } else {
+      modal.show()
+    }
   }
 
   const signOut = async () => {
@@ -44,8 +44,8 @@ export const useNear = () => {
       const provider = new nearAPI.providers.JsonRpcProvider({
         url: `https://rpc.${NetworkId}.near.org`,
       })
-
-      let res = await provider.query({
+      provider.q
+      const res = await provider.query({
         request_type: 'call_function',
         account_id: contractId,
         method_name: method,
@@ -59,12 +59,12 @@ export const useNear = () => {
 
         if (isEmptyArray) {
           return []
-        } else {
-          return JSON.parse(Buffer.from(res.result).toString())
         }
-      } else {
-        return null
+
+        return JSON.parse(Buffer.from(res.result).toString())
       }
+
+      return null
     },
     [selector],
   )
@@ -104,7 +104,9 @@ export const useNear = () => {
         const transactionLastResult =
           nearAPI.providers.getTransactionLastResult(outcome)
 
-        if (!transactionLastResult || transactionLastResult?.status?.Failure) {
+        // TODO: Maybe return back
+        // !transactionLastResult || transactionLastResult?.status?.Failure
+        if (transactionLastResult?.status?.Failure) {
           throw new Error(`Failed to call ${method} on ${contractId}`)
         }
 

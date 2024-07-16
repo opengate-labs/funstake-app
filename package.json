@@ -24,17 +24,19 @@
     "@near-wallet-selector/meteor-wallet": "^8.9.7",
     "@near-wallet-selector/modal-ui": "^8.9.7",
     "@near-wallet-selector/my-near-wallet": "^8.9.7",
+    "@tanstack/react-query": "^5.51.1",
+    "big.js": "^6.2.1",
     "borsh": "^2.0.0",
     "framer-motion": "^11.3.2",
     "near-api-js": "3.0.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hook-form": "^7.52.1",
     "react-router-dom": "^6.24.1",
     "rxjs": "^7.8.1",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "vite-plugin-node-polyfills": "^0.22.0",
     "@rollup/plugin-alias": "^5.1.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -43,6 +45,7 @@
     "eslint-plugin-react": "^7.34.2",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.7",
-    "vite": "^5.3.1"
+    "vite": "^5.3.1",
+    "vite-plugin-node-polyfills": "^0.22.0"
   }
 }
