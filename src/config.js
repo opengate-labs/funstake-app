@@ -1,5 +1,5 @@
 export const NetworkId = import.meta.env.VITE_APP_NETWORK_ID
-export const Contract = import.meta.env.VITE_APP_CONTRACT_ID
+export const CONTRACTS = import.meta.env.VITE_APP_CONTRACT_IDS.split(' ')
 
 export const WALLETS_PREFIX = {
   'meteor-wallet': '_meteor_wallet',
