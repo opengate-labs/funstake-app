@@ -8,6 +8,7 @@ import { getPlayer, getSession } from '@/actions'
 import { useModal } from '@/providers/ModalProvider'
 import { cashout, claim, stake } from '../actions'
 import { getPlayerChance, getSessionWinners } from '@/actions/user'
+import NearIcon from '@/components/NearIcon'
 
 // TODO:
 // STATUSES
@@ -114,34 +115,37 @@ export default function Home() {
   return (
     <>
       <Header />
-      session: {session && <pre>{JSON.stringify(session, null, 2)}</pre>}
-      player: {player && <pre>{JSON.stringify(player, null, 2)}</pre>}
+      {/* session: {session && <pre>{JSON.stringify(session, null, 2)}</pre>}
+      player: {player && <pre>{JSON.stringify(player, null, 2)}</pre>} */}
       <Container>
         {session && (
           <VStack
-            boxShadow='base'
+            mt={8}
+            // boxShadow='base'
             rounded={'md'}
             p={4}
             border={'1px solid'}
-            borderColor={'gray.100'}
+            borderColor={'cardBorder'}
+            background='cardBg'
+            borderRadius={'36px'}
           >
             <Text fontSize={'x-large'} fontWeight={500}>
-              Total Deposit: {formatNearAmount(session.amount)} Near
+              Total Deposit: {formatNearAmount(session.amount)} <NearIcon />
             </Text>
 
             {player && (
               <>
-                <Text fontSize={'large'} fontWeight={500} color={'green'}>
+                <Text fontSize={'large'} fontWeight={500} color={'mainGreen'}>
                   My Deposit: {formatNearAmount(player.amount)} Near
                 </Text>
-                <Text fontSize={'medium'} fontWeight={500} color={'green'}>
+                <Text fontSize={'medium'} fontWeight={500} color={'mainGreen'}>
                   Chance to win: {chance ? Number(chance).toFixed(2) : 0} %
                 </Text>
               </>
             )}
 
             {winners?.length && (
-              <Text fontSize={'large'} fontWeight={500} color={'green'}>
+              <Text fontSize={'large'} fontWeight={500} color={'mainGreen'}>
                 Winners: {winners.join(', ')}
               </Text>
             )}
@@ -157,8 +161,9 @@ export default function Home() {
               <Text>Duration: {humanizeDuration(session.duration / 1000)}</Text>
             )}
             <Text>Players: {session.players._keys.length}</Text>
-            <Text color={'green'}>
-              Final Reward: {formatNearAmount(session.reward)} Near
+            <Text color={'mainGreen'}>
+              Final Reward: {formatNearAmount(session.reward)}{' '}
+              <NearIcon width='48px' />
             </Text>
 
             {isEnded ? (
