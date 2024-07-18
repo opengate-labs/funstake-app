@@ -6,7 +6,7 @@ import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet'
 import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet'
 import { createContext, useEffect, useMemo, useState } from 'react'
 import { distinctUntilChanged, map } from 'rxjs'
-import { NetworkId, Contract } from '@/config'
+import { NetworkId } from '@/config'
 import { finalizeAuthWithHereWallet } from '@/utils/near/finalizeAuthWithHereWallet'
 import { HereWallet } from '@here-wallet/core'
 import initCustomHereWalletSelector from './initCustomHereWalletSelector'
@@ -24,10 +24,7 @@ const initWalletSelector = async ({
       debug: true,
       modules: [setupHereWallet(), setupMeteorWallet(), setupMyNearWallet()],
     })
-    const _modal = setupModal(_selector, {
-      // contractId: Contract,
-      methodNames: ['claim', 'add_project'],
-    })
+    const _modal = setupModal(_selector, {})
     const state = _selector.store.getState()
 
     setAccounts(state.accounts)

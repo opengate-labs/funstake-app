@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-
 import {
   Modal,
   ModalOverlay,
@@ -14,7 +13,6 @@ import {
   FormLabel,
   Input,
   FormErrorMessage,
-  Box,
   InputRightElement,
   InputGroup,
 } from '@chakra-ui/react'
@@ -26,7 +24,6 @@ import Big from 'big.js'
 export default function StakeModal({
   onSubmit,
   title = 'Stake',
-  message = 'Are you sure you want to proceed?',
   isOpen,
   onClose,
 }) {
@@ -37,6 +34,7 @@ export default function StakeModal({
     queryFn: () => getBalance({ accountId }),
     enabled: !!accountId,
   })
+
   const {
     register,
     handleSubmit,

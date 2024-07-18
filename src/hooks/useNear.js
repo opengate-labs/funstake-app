@@ -3,7 +3,7 @@ import { useWalletSelector } from './useWalletSelector'
 import * as nearAPI from 'near-api-js'
 import { actionCreators, encodeSignedDelegate } from '@near-js/transactions'
 
-import { NetworkId, Contract, WALLETS_PREFIX } from '@/config'
+import { NetworkId, WALLETS_PREFIX } from '@/config'
 import { EIGHTY_TGAS, THIRTY_TGAS } from '@/constants/nearAmounts'
 
 export const NO_DEPOSIT = '0'
@@ -18,9 +18,9 @@ export const useNear = () => {
     if (isTelegram) {
       const wallet = await selector.wallet()
       wallet.signIn({
-        contractId: Contract,
+        // contractId: Contract,
         callbackUrl: '#loginSuccess',
-        methodNames: ['claim', 'add_project'],
+        // methodNames: ['claim', 'add_project'],
       })
     } else {
       modal.show()

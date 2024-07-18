@@ -1,4 +1,4 @@
-import { NetworkId, Contract as contractId } from '@/config'
+import { NetworkId } from '@/config'
 import * as nearAPI from 'near-api-js'
 import { formatNearAmount } from 'near-api-js/lib/utils/format'
 
@@ -16,7 +16,27 @@ export const getBalance = async ({ accountId }) => {
   return balance ? formatNearAmount(balance.amount, 5) : 0
 }
 
-export const getSessionWinners = async ({ viewMethod, sessionId }) => {
+// TODO: move to other actions file
+export const getStakeStorageCost = async ({ viewMethod, contractId }) => {
+  try {
+    const result = await viewMethod({
+      contractId,
+      method: 'get_stake_storage_cost',
+    })
+
+    return result
+  } catch (error) {
+    console.error(error)
+    return 0
+  }
+}
+
+// TODO: move to other actions file
+export const getSessionWinners = async ({
+  viewMethod,
+  sessionId,
+  contractId,
+}) => {
   const result = await viewMethod({
     contractId,
     method: 'get_session_winners',
@@ -26,27 +46,17 @@ export const getSessionWinners = async ({ viewMethod, sessionId }) => {
   return result
 }
 
-export const getPlayerChance = async ({ viewMethod, sessionId, accountId }) => {
+export const getPlayerChance = async ({
+  viewMethod,
+  sessionId,
+  accountId,
+  contractId,
+}) => {
   const result = await viewMethod({
     contractId,
     method: 'get_player_chance',
     args: { sessionId, address: accountId },
   })
 
-  console.log('getPlayerChance result: ', result)
-
   return result
 }
-
-// export const getPlayerTicketsRange = async ({ viewMethod, accountId, sessionId }) => {
-//   const ticketsRange = await viewMethod({
-//     contractId,
-//     method: 'get_player_tickets_range',
-// args: {
-//   address: accountId,
-// sessionId
-// }
-//   })
-
-//   return balance ? formatNearAmount(balance.amount, 5) : 0
-// }

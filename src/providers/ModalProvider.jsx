@@ -1,5 +1,5 @@
 import { useDisclosure } from '@chakra-ui/react'
-import React, { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState } from 'react'
 import * as modals from '@/modals'
 
 /**

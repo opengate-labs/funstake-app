@@ -2,7 +2,6 @@ import {
   Button,
   Flex,
   Heading,
-  Icon,
   IconButton,
   useColorMode,
 } from '@chakra-ui/react'
