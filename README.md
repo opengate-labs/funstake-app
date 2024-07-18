@@ -1,8 +1,9 @@
-# React + Vite
+# Funstake frontend app's repo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![image](https://github.com/user-attachments/assets/a9d59455-fa9d-4c36-9af0-5cb3cb0bcbd0)
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## You can find contracts here [funstake-contracts](https://github.com/opengate-labs/fun-stake-contracts)
+
+
+## App is live on [app.funstake.io](funstake.io)
