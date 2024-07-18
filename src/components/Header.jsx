@@ -1,8 +1,17 @@
-import { Button, Flex, Heading } from '@chakra-ui/react'
+import {
+  Button,
+  Flex,
+  Heading,
+  IconButton,
+  useColorMode,
+} from '@chakra-ui/react'
 import { useNear } from '../hooks'
+import Logo from '@/icons/Logo'
+import { MoonIcon, SunIcon } from '@chakra-ui/icons'
 
 export default function Header() {
   const { accountId, signIn, signOut } = useNear()
+  const { colorMode, toggleColorMode } = useColorMode()
 
   return (
     <Flex
@@ -13,14 +22,17 @@ export default function Header() {
       py={3}
       borderBottomWidth='1px'
     >
-      <Heading fontSize='lg'>FUN-STAKE</Heading>
+      <Logo textColor={colorMode === 'light' ? '#1A202C' : '#fff'} />
       <Flex align='center'>
+        <IconButton mr={2} onClick={toggleColorMode}>
+          {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+        </IconButton>
         {accountId && (
           <Heading mr={2} fontSize='sm'>
             {accountId}
           </Heading>
         )}
-        <Button size='sm' onClick={accountId ? signOut : signIn}>
+        <Button onClick={accountId ? signOut : signIn}>
           {accountId ? 'Disconnect' : 'Connect Wallet'}
         </Button>
       </Flex>

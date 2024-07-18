@@ -19,7 +19,11 @@ export default function Home() {
       <Container>
         {activeSessions?.length &&
           activeSessions.map((session) => (
-            <Session refetch={refetchActiveSessions} key={session.id} session={session} />
+            <Session
+              refetch={refetchActiveSessions}
+              key={session.id}
+              session={session}
+            />
           ))}
       </Container>
     </>

@@ -5,6 +5,8 @@ import humanizeDuration from '@/utils/etc/humanizeDuration'
 import { formatNearAmount } from 'near-api-js/lib/utils/format'
 import { useNear } from '@/hooks'
 import { useModal } from '@/providers/ModalProvider'
+import NearIcon from '@/components/NearIcon'
+
 import {
   cashout,
   claim,
@@ -88,10 +90,9 @@ export default function Session({ session, refetch }) {
         cashoutMutation.mutate(toggleLoading)
       },
     })
-    // Open confirm modal saying that after cashout you don't any more participate in the game
   }
-  const sessionId = session?.id
 
+  const sessionId = session?.id
   const isEnded = session?.end < Date.now() * 1000000
 
   const { data: winners } = useQuery({
@@ -134,33 +135,38 @@ export default function Session({ session, refetch }) {
 
   return (
     <VStack
-      boxShadow='base'
+      mt={8}
+      // boxShadow='base'
       rounded={'md'}
       p={4}
       border={'1px solid'}
-      borderColor={'gray.100'}
+      borderColor={'cardBorder'}
+      background='cardBg'
+      borderRadius={'36px'}
     >
       <Text fontSize={'x-large'} fontWeight={500}>
-        Total Deposit: {formatNearAmount(session.amount)} Near
+        Total Deposit: {formatNearAmount(session.amount)} <NearIcon />
       </Text>
+
       {player && (
         <>
-          <Text fontSize={'large'} fontWeight={500} color={'green'}>
+          <Text fontSize={'large'} fontWeight={500} color={'mainGreen'}>
             My Deposit: {formatNearAmount(player.amount)} Near
           </Text>
           {chance && Number(chance) ? (
-            <Text fontSize={'medium'} fontWeight={500} color={'green'}>
-              Chance to win: {Number(chance).toFixed(2)} %
+            <Text fontSize={'medium'} fontWeight={500} color={'mainGreen'}>
+              Chance to win: {chance} %
             </Text>
           ) : null}
         </>
       )}
 
       {winners?.length && (
-        <Text fontSize={'large'} fontWeight={500} color={'green'}>
-          Winners: {winners.join(', ')}
+        <Text fontSize={'large'} fontWeight={500} color={'mainGreen'}>
+          Winner: {winners.join(', ')}
         </Text>
       )}
+
       <Text>
         Start Date: {new Date(session.start / 1000000).toLocaleString()}
       </Text>
@@ -173,13 +179,16 @@ export default function Session({ session, refetch }) {
       )}
 
       <Text>Players: {players}</Text>
+
       {!session.isFinalized && players && (
-        <Text color={'green'}>
+        <Text color={'mainGreen'}>
           Accumulated Reward: {formatNearAmount(accumulatedReward, 6)} Near
         </Text>
       )}
-
-      <Text>Final Reward: {formatNearAmount(session.reward, 6)} Near</Text>
+      <Text color={'mainGreen'}>
+        Final Reward: {formatNearAmount(session.reward, 6)}{' '}
+        <NearIcon width='48px' />
+      </Text>
 
       {isEnded ? (
         <>
@@ -195,7 +204,7 @@ export default function Session({ session, refetch }) {
                 onClick={onClaim}
                 isDisabled={player?.isClaimed}
               >
-                {player?.isClaimed ? 'Already Claimed' : 'Claim'}
+                {player.isClaimed ? 'Already Claimed' : 'Claim'}
               </Button>
             </>
           )}
