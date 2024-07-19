@@ -54,6 +54,7 @@ const initHereForTelegram = async ({
     })
 
     _selector.setWallet(hereWallet)
+
     const isSignedIn = await hereWallet.isSignedIn()
 
     if (isSignedIn) {
@@ -76,9 +77,11 @@ const initHereForTelegram = async ({
 
     setAccounts(_selector.getState().accounts)
     setSelector(_selector)
-    setTimeout(() => {
-      setLoading(false)
-    }, 800)
+    // TODO: maybe use with timeout
+    // setTimeout(() => {
+    //   setLoading(false)
+    // }, 800)
+    setLoading(false)
   } catch (error) {
     console.error('Error in init Telegram >>>', error.message)
   }
@@ -94,21 +97,20 @@ export const WalletSelectorProvider = ({ children }) => {
   const [inTelegramApp, setInTelegramApp] = useState(false)
 
   useEffect(() => {
-    initWalletSelector({ setAccounts, setLoading, setModal, setSelector })
+    const isTelegram = !!window.Telegram?.WebApp.initData
+    console.log('isTelegram:', isTelegram)
 
-    // const isTelegram = !!global.Telegram?.WebApp.initData
+    setInTelegramApp(isTelegram)
 
-    // setInTelegramApp(isTelegram)
-
-    // if (isTelegram) {
-    //   initHereForTelegram({
-    //     setAccounts,
-    //     setLoading,
-    //     setSelector,
-    //   })
-    // } else {
-    //   initWalletSelector({ setAccounts, setLoading, setModal, setSelector })
-    // }
+    if (isTelegram) {
+      initHereForTelegram({
+        setAccounts,
+        setLoading,
+        setSelector,
+      })
+    } else {
+      initWalletSelector({ setAccounts, setLoading, setModal, setSelector })
+    }
   }, [])
 
   useEffect(() => {

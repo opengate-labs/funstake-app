@@ -12,7 +12,7 @@ export const Preloader = () => {
       bg={'white'}
     >
       <AbsoluteCenter>
-        <Spinner size={'xl'} />
+        <Spinner color={'mainGreen'} size={'xl'} />
       </AbsoluteCenter>
     </Box>
   )
