@@ -8,6 +8,7 @@ import {
 import { useNear } from '../hooks'
 import Logo from '@/icons/Logo'
 import { MoonIcon, SunIcon } from '@chakra-ui/icons'
+import { Link } from 'react-router-dom'
 
 export default function Header() {
   const { accountId, signIn, signOut } = useNear()
@@ -22,7 +23,9 @@ export default function Header() {
       py={3}
       borderBottomWidth='1px'
     >
-      <Logo textColor={colorMode === 'light' ? '#1A202C' : '#fff'} />
+      <Link to='/'>
+        <Logo textColor={colorMode === 'light' ? '#1A202C' : '#fff'} />
+      </Link>
       <Flex align='center'>
         <IconButton mr={2} onClick={toggleColorMode}>
           {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
