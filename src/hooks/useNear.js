@@ -17,11 +17,7 @@ export const useNear = () => {
 
     if (isTelegram) {
       const wallet = await selector.wallet()
-      wallet.signIn({
-        // contractId: Contract,
-        callbackUrl: '#loginSuccess',
-        // methodNames: ['claim', 'add_project'],
-      })
+      wallet.signIn({})
     } else {
       modal.show()
     }

@@ -1295,7 +1295,7 @@
     sha1 "^1.1.1"
     uuid4 "2.0.3"
 
-"@here-wallet/core@^3.0.3":
+"@here-wallet/core@^3.3.1":
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/@here-wallet/core/-/core-3.3.1.tgz#41af535794903d4ac04ef06ac0bbee7b7bbaef8b"
   integrity sha512-UcokwayE9J8HR+QUHotvpFGcZ6Xlpc1sjyzSOOeknkt2se56anJZdIPczhkwwNfYR7qAOj2fo3LTLbnmfj7GwA==

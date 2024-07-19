@@ -155,7 +155,7 @@ export default function Session({ session, refetch }) {
           </Text>
           {chance && Number(chance) ? (
             <Text fontSize={'medium'} fontWeight={500} color={'mainGreen'}>
-              Chance to win: {chance} %
+              Chance to win: {Number(chance).toFixed(2)} %
             </Text>
           ) : null}
         </>
