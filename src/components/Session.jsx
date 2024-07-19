@@ -31,7 +31,14 @@ export default function Session({ session, refetch }) {
 
   const mutation = useMutation({
     mutationFn: ({ amount }) =>
-      stake({ callMethod, amount, viewMethod, contractId: session.contractId }),
+      stake({
+        callMethod,
+        amount,
+        viewMethod,
+        contractId: session.contractId,
+        sessionId: session.id,
+        address: accountId,
+      }),
     onSuccess: (data, { toggleLoading }) => {
       refetch()
       refetchPlayer()
