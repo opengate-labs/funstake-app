@@ -88,19 +88,36 @@ export const getPlayer = async ({
   address,
   contractId,
 }) => {
-  const player = await viewMethod({
-    contractId,
-    method: 'get_player',
-    args: { sessionId, address },
-  })
+  try {
+    const player = await viewMethod({
+      contractId,
+      method: 'get_player',
+      args: { sessionId, address },
+    })
 
-  return player
+    return player
+  } catch (error) {
+    console.error(error)
+    return null
+  }
 }
 
-export const stake = async ({ callMethod, amount, viewMethod, contractId }) => {
-  const storageCost = Big(
-    (await getStakeStorageCost({ viewMethod, contractId })) || 0,
-  )
+export const stake = async ({
+  address,
+  callMethod,
+  amount,
+  viewMethod,
+  contractId,
+  sessionId,
+}) => {
+  const player = await getPlayer({ sessionId, address, contractId, viewMethod })
+  let storageCost = Big(0)
+
+  if (!player) {
+    storageCost = Big(
+      (await getStakeStorageCost({ viewMethod, contractId })) || 0,
+    )
+  }
 
   const deposit = Big(parseNearAmount(amount)).plus(storageCost)
 
