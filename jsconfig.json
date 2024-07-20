@@ -13,7 +13,8 @@
       "@/hooks/*": ["hooks/*"],
       "@/assets/*": ["assets/*"],
       "@/config": ["config.js"],
-      "@/icons": ["icons/*"]
+      "@/icons": ["icons/*"],
+      "@/middleware": ["middleware/*"]
     }
   }
 }
