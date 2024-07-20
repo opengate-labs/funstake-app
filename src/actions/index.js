@@ -5,7 +5,6 @@ import { ONE_YOCTO_DEPOSIT } from '../hooks'
 import { getStakeStorageCost } from './user'
 import { ONE_YEAR_TS } from '@/constants/dates'
 
-
 export const getPools = () => {
   return CONTRACTS
 }
@@ -77,8 +76,8 @@ export const getStorageBalanceOf = async ({
   }
 }
 
-export const getAccumulatedReward = async ({ viewMethod, accountId }) => {
-  const now = Big(Date.now() * 1e6)
+const calculateReward = async ({ viewMethod, accountId, currentTimestamp }) => {
+  const now = Big(currentTimestamp)
 
   const yieldSource = await getYieldSource({
     viewMethod,
@@ -105,6 +104,20 @@ export const getAccumulatedReward = async ({ viewMethod, accountId }) => {
     .times(now.minus(lastAccrualTs))
 
   return result.toString()
+}
+
+export const getExpectedFinalReward = async ({
+  viewMethod,
+  accountId,
+  currentTimestamp,
+}) => {
+  return calculateReward({ viewMethod, accountId, currentTimestamp })
+}
+
+export const getAccumulatedReward = async ({ viewMethod, accountId }) => {
+  const currentTimestamp = Date.now() * 1e6
+
+  return await calculateReward({ viewMethod, accountId, currentTimestamp })
 }
 
 export const getYieldInfo = async ({ viewMethod, yieldSource, accountId }) => {
