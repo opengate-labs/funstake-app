@@ -1,0 +1,1 @@
+export const ONE_YEAR_TS = 31536000000000000

@@ -3,7 +3,8 @@ import { Big } from '@/utils/big'
 import { parseNearAmount } from 'near-api-js/lib/utils/format'
 import { ONE_YOCTO_DEPOSIT } from '../hooks'
 import { getStakeStorageCost } from './user'
-const ONE_YEAR_TS = Big(31536000000000000)
+import { ONE_YEAR_TS } from '@/constants/dates'
+
 
 export const getPools = () => {
   return CONTRACTS
