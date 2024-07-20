@@ -1,30 +1,24 @@
 import Header from '@/components/Header'
-import Session from '@/components/Session'
-import { useNear } from '../hooks'
-import { useQuery } from '@tanstack/react-query'
-import { Container } from '@chakra-ui/react'
-import { getActiveSessions } from '../actions'
+import { Container, Wrap } from '@chakra-ui/react'
+import { COINS_LIST } from '@/constants/coinList'
+import { CoinItem } from '@/components/CoinItem'
 
 export default function Home() {
-  const { viewMethod } = useNear()
-
-  const { data: activeSessions, refetch: refetchActiveSessions } = useQuery({
-    queryKey: ['active_sessions'],
-    queryFn: () => getActiveSessions({ viewMethod }),
-  })
-
   return (
     <>
       <Header />
-      <Container>
-        {activeSessions?.length &&
-          activeSessions.map((session) => (
-            <Session
-              refetch={refetchActiveSessions}
-              key={session.id}
-              session={session}
+      <Container mt={16}>
+        <Wrap justify='center' spacing={6}>
+          {COINS_LIST.map((coin) => (
+            <CoinItem
+              key={coin.id}
+              isEnabled={coin.isEnabled}
+              icon={coin.icon}
+              name={coin.name}
+              id={coin.id}
             />
           ))}
+        </Wrap>
       </Container>
     </>
   )
