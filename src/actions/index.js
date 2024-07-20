@@ -3,6 +3,7 @@ import { Big } from '@/utils/big'
 import { parseNearAmount } from 'near-api-js/lib/utils/format'
 import { ONE_YOCTO_DEPOSIT } from '../hooks'
 import { getStakeStorageCost } from './user'
+const ONE_YEAR_TS = Big(31536000000000000)
 
 export const getPools = () => {
   return CONTRACTS
@@ -56,19 +57,72 @@ export const getSession = ({ viewMethod, sessionId, contractId }) => {
   return session
 }
 
-export const getCurrentSessionAccumulatedReward = async ({
+export const getStorageBalanceOf = async ({
   viewMethod,
   contractId,
+  accountId,
 }) => {
-  const yieldSource = await getYieldSource({ viewMethod, contractId })
+  try {
+    const balanceOf = await viewMethod({
+      contractId,
+      method: 'storage_balance_of',
+      args: { account_id: accountId },
+    })
 
-  const data = await viewMethod({
-    contractId: yieldSource,
-    method: 'get_user',
-    args: { account_id: contractId },
+    return balanceOf
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
+export const getAccumulatedReward = async ({ viewMethod, accountId }) => {
+  const now = Big(Date.now() * 1e6)
+
+  const yieldSource = await getYieldSource({
+    viewMethod,
+    contractId: accountId,
   })
 
-  return data.accrued
+  const [{ apyValue, lastAccrualTs }, balanceOf] = await Promise.all([
+    getYieldInfo({
+      viewMethod,
+      yieldSource,
+      accountId,
+    }),
+    getStorageBalanceOf({
+      accountId,
+      contractId: yieldSource,
+      viewMethod,
+    }),
+  ])
+
+  const result = Big(balanceOf)
+    .div(1000)
+    .times(apyValue)
+    .div(ONE_YEAR_TS)
+    .times(now.minus(lastAccrualTs))
+
+  return result.toString()
+}
+
+export const getYieldInfo = async ({ viewMethod, yieldSource, accountId }) => {
+  try {
+    const data = await viewMethod({
+      contractId: yieldSource,
+      method: 'get_user',
+      args: { account_id: accountId },
+    })
+
+    return {
+      apyValue: data.apy_value,
+      lastAccrualTs: data.last_accrual_ts,
+      accrued: data.accrued,
+    }
+  } catch (error) {
+    console.error(error)
+    return null
+  }
 }
 
 export const getYieldSource = async ({ viewMethod, contractId }) => {
