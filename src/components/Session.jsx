@@ -10,7 +10,7 @@ import NearIcon from '@/components/NearIcon'
 import {
   cashout,
   claim,
-  getCurrentSessionAccumulatedReward,
+  getAccumulatedReward,
   getPlayer,
   stake,
 } from '../actions'
@@ -22,9 +22,9 @@ export default function Session({ session, refetch }) {
   const { data: accumulatedReward } = useQuery({
     queryKey: ['accumulated_reward', session.id],
     queryFn: () =>
-      getCurrentSessionAccumulatedReward({
+      getAccumulatedReward({
         viewMethod,
-        contractId: session.contractId,
+        accountId: session.contractId,
       }),
     enabled: !!session,
   })
@@ -187,15 +187,17 @@ export default function Session({ session, refetch }) {
 
       <Text>Players: {players}</Text>
 
-      {!session.isFinalized && players && (
+      {!session.isFinalized && accumulatedReward && (
         <Text color={'mainGreen'}>
-          Accumulated Reward: {formatNearAmount(accumulatedReward, 6)} Near
+          Accumulated Prize: ~{formatNearAmount(accumulatedReward, 6)} Near
         </Text>
       )}
-      <Text color={'mainGreen'}>
-        Final Reward: {formatNearAmount(session.reward, 6)}{' '}
-        <NearIcon width='48px' />
-      </Text>
+      {session?.reward > 0 && (
+        <Text color={'mainGreen'}>
+          Final Reward: {formatNearAmount(session.reward, 6)}{' '}
+          <NearIcon width='48px' />
+        </Text>
+      )}
 
       {isEnded ? (
         <>
