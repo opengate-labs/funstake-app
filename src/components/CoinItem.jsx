@@ -18,7 +18,7 @@ export const CoinItem = ({ isEnabled, icon, name, id }) => {
       opacity={isEnabled ? 1 : 0.5}
       flexDir='column'
       as={Link}
-      to={`/p/${id}`}
+      to={isEnabled ? `/p/${id}` : null}
     >
       <Flex
         align='center'
