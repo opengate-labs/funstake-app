@@ -11,6 +11,7 @@ import {
   cashout,
   claim,
   getAccumulatedReward,
+  getExpectedFinalReward,
   getPlayer,
   stake,
 } from '../actions'
@@ -25,6 +26,16 @@ export default function Session({ session, refetch }) {
       getAccumulatedReward({
         viewMethod,
         accountId: session.contractId,
+      }),
+    enabled: !!session,
+  })
+  const { data: expectedFinalReward } = useQuery({
+    queryKey: ['expected_final_reward', session.id],
+    queryFn: () =>
+      getExpectedFinalReward({
+        viewMethod,
+        accountId: session.contractId,
+        currentTimestamp: session.end,
       }),
     enabled: !!session,
   })
@@ -192,6 +203,13 @@ export default function Session({ session, refetch }) {
           Accumulated Prize: ~{formatNearAmount(accumulatedReward, 6)} Near
         </Text>
       )}
+
+      {!session.isFinalized && expectedFinalReward && (
+        <Text color={'mainGreen'}>
+          Expected Prize: ~{formatNearAmount(expectedFinalReward, 6)} Near
+        </Text>
+      )}
+
       {session?.reward > 0 && (
         <Text color={'mainGreen'}>
           Final Reward: {formatNearAmount(session.reward, 6)}{' '}
