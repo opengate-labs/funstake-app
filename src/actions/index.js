@@ -84,7 +84,7 @@ const calculateReward = async ({ viewMethod, accountId, currentTimestamp }) => {
     contractId: accountId,
   })
 
-  const [{ apyValue, lastAccrualTs }, balanceOf] = await Promise.all([
+  const [{ apyValue, lastAccrualTs, accrued }, balanceOf] = await Promise.all([
     getYieldInfo({
       viewMethod,
       yieldSource,
@@ -103,7 +103,7 @@ const calculateReward = async ({ viewMethod, accountId, currentTimestamp }) => {
     .div(ONE_YEAR_TS)
     .times(now.minus(lastAccrualTs))
 
-  return result.toString()
+  return Big(accrued).plus(result).toString()
 }
 
 export const getExpectedFinalReward = async ({
