@@ -1,5 +1,5 @@
 import Header from '@/components/Header'
-import { Container, Wrap } from '@chakra-ui/react'
+import { Container, Text, Wrap } from '@chakra-ui/react'
 import { COINS_LIST } from '@/constants/coinList'
 import { CoinItem } from '@/components/CoinItem'
 
@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <Container mt={16}>
+      <Container my={16}>
         <Wrap justify='center' spacing={6}>
           {COINS_LIST.map((coin) => (
             <CoinItem

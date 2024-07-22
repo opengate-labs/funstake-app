@@ -5,6 +5,8 @@ export default function NearIcon({ width = '62px' }) {
   return (
     <Image
       display='inline'
+      userSelect={'none'}
+      draggable={false}
       src={
         colorMode === 'light' ? '/near-logo-dark.svg' : '/near-logo-light.svg'
       }

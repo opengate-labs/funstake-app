@@ -54,7 +54,11 @@ export default function StakeModal({
   return (
     <Modal isCentered isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent as={'form'} onSubmit={handleSubmit(onFormSubmit)}>
+      <ModalContent
+        as={'form'}
+        onSubmit={handleSubmit(onFormSubmit)}
+        background='mainBg'
+      >
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -67,6 +71,8 @@ export default function StakeModal({
               <Input
                 id='amount'
                 placeholder='Amount in Near'
+                _focus={{ borderColor: 'mainGreen' }}
+                _focusVisible={{ borderColor: 'mainGreen' }}
                 {...register('amount', {
                   required: 'This is required',
                   pattern: {
@@ -106,17 +112,15 @@ export default function StakeModal({
 
         <ModalFooter>
           <Button
-            type='submit'
-            colorScheme='blue'
-            variant='outline'
             mr={3}
-            isLoading={isLoading}
+            variant='outline'
+            onClick={onClose}
+            isDisabled={isLoading}
           >
-            Confirm
-          </Button>
-
-          <Button onClick={onClose} isDisabled={isLoading}>
             Close
+          </Button>
+          <Button type='submit' isLoading={isLoading} color='mainGreen'>
+            Confirm
           </Button>
         </ModalFooter>
       </ModalContent>

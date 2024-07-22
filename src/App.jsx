@@ -1,10 +1,11 @@
-import { ChakraProvider } from '@chakra-ui/react'
+import { ChakraProvider, Flex, Text } from '@chakra-ui/react'
 import { WalletSelectorProvider } from '@/providers/WalletSelectorProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import ModalProvider from '@/providers/ModalProvider'
 import theme from './theme/theme'
 import { BrowserRouter } from 'react-router-dom'
 import Pages from './pages'
+import OpenInTGButton from './components/OpenInTGButton'
 
 const queryClient = new QueryClient()
 
@@ -16,6 +17,7 @@ function App() {
           <WalletSelectorProvider>
             <ModalProvider>
               <Pages />
+              <OpenInTGButton />
             </ModalProvider>
           </WalletSelectorProvider>
         </QueryClientProvider>

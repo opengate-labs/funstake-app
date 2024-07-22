@@ -87,7 +87,14 @@ const initHereForTelegram = async ({
   }
 }
 
-export const WalletSelectorContext = createContext(null)
+export const WalletSelectorContext = createContext({
+  isLoadingWallet: true,
+  selector: null,
+  modal: null,
+  accounts: [],
+  accountId: null,
+  inTelegramApp: false,
+})
 
 export const WalletSelectorProvider = ({ children }) => {
   const [selector, setSelector] = useState(null)
@@ -154,6 +161,7 @@ export const WalletSelectorProvider = ({ children }) => {
       modal,
       accounts,
       accountId: accounts.find((account) => account.active)?.accountId || null,
+      inTelegramApp,
     }),
     [selector, modal, accounts, loading],
   )
