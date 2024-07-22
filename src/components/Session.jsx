@@ -1,11 +1,18 @@
 import { getPlayerChance, getSessionWinners } from '@/actions/user'
-import { VStack, Text, Button, HStack } from '@chakra-ui/react'
+import { VStack, Text, Button, HStack, Box, Flex } from '@chakra-ui/react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import humanizeDuration from '@/utils/etc/humanizeDuration'
 import { formatNearAmount } from 'near-api-js/lib/utils/format'
 import { useNear } from '@/hooks'
 import { useModal } from '@/providers/ModalProvider'
 import NearIcon from '@/components/NearIcon'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+} from '@chakra-ui/react'
 
 import {
   cashout,
@@ -15,9 +22,10 @@ import {
   getPlayer,
   stake,
 } from '../actions'
+import { Timer } from './Timer'
 
 // TODO: simplify mutations
-export default function Session({ session, refetch }) {
+export default function Session({ session, refetch, index }) {
   const { viewMethod, accountId, callMethod, signIn } = useNear()
   const { openModal, closeModal } = useModal()
   const { data: accumulatedReward } = useQuery({
@@ -150,7 +158,7 @@ export default function Session({ session, refetch }) {
 
   const isWinner = winners?.includes(accountId)
   const players = session?.players?._keys.length
-
+  console.log(new Date(session.end / 1000000))
   return (
     <VStack
       mt={8}
@@ -162,64 +170,100 @@ export default function Session({ session, refetch }) {
       background='cardBg'
       borderRadius={'36px'}
     >
-      <Text fontSize={'x-large'} fontWeight={500}>
-        Total Deposit: {formatNearAmount(session.amount)} <NearIcon />
-      </Text>
+      <Accordion allowToggle w='full'>
+        <AccordionItem
+          w='full'
+          borderTopWidth={0}
+          borderBottomWidth={'0 !important'}
+        >
+          <AccordionButton w='full' _hover={{}}>
+            <Box as='span' flex='1' textAlign='left'>
+              <Text
+                w='full'
+                borderBottomWidth='1px'
+                pb={1}
+                borderColor={'cardBorder'}
+                fontWeight='light'
+              >
+                Near Pool #{Number(session.id) + 1} {isEnded ? '(Ended)' : ''}
+              </Text>
+              <Text fontSize={'x-large'} fontWeight={500}>
+                Total Deposit: {formatNearAmount(session.amount)} <NearIcon />
+              </Text>
+              {isEnded ? (
+                <Text>
+                  End Date: {new Date(session.end / 1000000).toLocaleString()}
+                </Text>
+              ) : (
+                <Timer expiryTimestamp={session.end / 1000000} />
+              )}
+            </Box>
+            <AccordionIcon />
+          </AccordionButton>
+          <AccordionPanel pb={4}>
+            {player && (
+              <>
+                <Text fontSize={'large'} fontWeight={500} color={'mainGreen'}>
+                  My Deposit: {formatNearAmount(player.amount)}{' '}
+                  <NearIcon width='56px' />
+                </Text>
+                {chance && Number(chance) ? (
+                  <Text
+                    fontSize={'medium'}
+                    fontWeight={500}
+                    color={'mainGreen'}
+                  >
+                    Chance to win: {Number(chance).toFixed(2)} %
+                  </Text>
+                ) : null}
+              </>
+            )}
 
-      {player && (
-        <>
-          <Text fontSize={'large'} fontWeight={500} color={'mainGreen'}>
-            My Deposit: {formatNearAmount(player.amount)} Near
-          </Text>
-          {chance && Number(chance) ? (
-            <Text fontSize={'medium'} fontWeight={500} color={'mainGreen'}>
-              Chance to win: {Number(chance).toFixed(2)} %
+            {winners?.length && (
+              <Text fontSize={'large'} fontWeight={500} color={'mainGreen'}>
+                Winner: {winners.join(', ')}
+              </Text>
+            )}
+
+            <Text>
+              Start Date: {new Date(session.start / 1000000).toLocaleString()}
             </Text>
-          ) : null}
-        </>
-      )}
 
-      {winners?.length && (
-        <Text fontSize={'large'} fontWeight={500} color={'mainGreen'}>
-          Winner: {winners.join(', ')}
-        </Text>
-      )}
+            <Text>Players: {players}</Text>
 
-      <Text>
-        Start Date: {new Date(session.start / 1000000).toLocaleString()}
-      </Text>
-      {isEnded ? (
-        <Text>
-          End Date: {new Date(session.end / 1000000).toLocaleString()}
-        </Text>
-      ) : (
-        <Text>Duration: {humanizeDuration(session.duration / 1000)}</Text>
-      )}
+            {!session.isFinalized && accumulatedReward && (
+              <Text>
+                Accumulated Prize:{' '}
+                <Text as='span' color='mainGreen'>
+                  ~{formatNearAmount(accumulatedReward, 6)}{' '}
+                  <NearIcon width='48px' />
+                </Text>
+              </Text>
+            )}
 
-      <Text>Players: {players}</Text>
+            {!session.isFinalized && expectedFinalReward && (
+              <Text>
+                Expected Prize:
+                <Text ml={1} as='span' fontWeight='bold' color='mainGreen'>
+                  ~{formatNearAmount(expectedFinalReward, 6)}{' '}
+                  <NearIcon width='48px' />
+                </Text>
+              </Text>
+            )}
 
-      {!session.isFinalized && accumulatedReward && (
-        <Text color={'mainGreen'}>
-          Accumulated Prize: ~{formatNearAmount(accumulatedReward, 6)} Near
-        </Text>
-      )}
-
-      {!session.isFinalized && expectedFinalReward && (
-        <Text color={'mainGreen'}>
-          Expected Prize: ~{formatNearAmount(expectedFinalReward, 6)} Near
-        </Text>
-      )}
-
-      {session?.reward > 0 && (
-        <Text color={'mainGreen'}>
-          Final Reward: {formatNearAmount(session.reward, 6)}{' '}
-          <NearIcon width='48px' />
-        </Text>
-      )}
+            {session?.reward > 0 && (
+              <Text>
+                Final Reward: {formatNearAmount(session.reward, 6)}{' '}
+                <NearIcon width='48px' />
+              </Text>
+            )}
+          </AccordionPanel>
+        </AccordionItem>
+      </Accordion>
 
       {isEnded ? (
         <>
-          <Button isDisabled w={'full'}>
+          <Button isDisabled w={'full'} borderRadius={'32px'}>
             Game is ended
           </Button>
 
@@ -227,6 +271,7 @@ export default function Session({ session, refetch }) {
             <>
               {isWinner && 'You are a winner!'}
               <Button
+                borderRadius={'32px'}
                 w={'full'}
                 onClick={onClaim}
                 isDisabled={player?.isClaimed}
@@ -237,14 +282,25 @@ export default function Session({ session, refetch }) {
           )}
         </>
       ) : (
-        <HStack>
-          <Button colorScheme={'blue'} onClick={onStake}>
-            {player ? 'Stake' : 'Enter the game'}
+        <HStack w={'full'}>
+          <Button
+            onClick={onStake}
+            w={'full'}
+            borderRadius={'32px'}
+            color='mainGreen'
+            py={6}
+          >
+            {player ? 'Stake More' : 'Enter the game'}
           </Button>
 
           {player && (
-            <Button variant={'ghost'} onClick={onCashout}>
-              Cashout
+            <Button
+              variant={'ghost'}
+              onClick={onCashout}
+              p={6}
+              borderRadius={'32px'}
+            >
+              Cash out
             </Button>
           )}
         </HStack>

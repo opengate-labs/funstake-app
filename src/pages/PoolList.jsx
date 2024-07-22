@@ -20,11 +20,12 @@ export default function PoolList() {
       <Header />
       <Container>
         {activeSessions?.length &&
-          activeSessions.map((session) => (
+          activeSessions.map((session, index) => (
             <Session
               refetch={refetchActiveSessions}
               key={session.id}
               session={session}
+              index={index}
             />
           ))}
       </Container>

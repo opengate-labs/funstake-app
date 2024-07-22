@@ -19,16 +19,15 @@ export default function ConfirmationModal({
 }) {
   const [isLoading, toggleLoading] = useState(false)
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isCentered isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent background='mainBg'>
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>{message}</ModalBody>
 
         <ModalFooter>
           <Button
-            colorScheme='blue'
             variant='outline'
             mr={3}
             onClick={onClose}
@@ -42,6 +41,7 @@ export default function ConfirmationModal({
               toggleLoading(true)
               onConfirm(toggleLoading)
             }}
+            color='mainGreen'
           >
             Confirm
           </Button>
