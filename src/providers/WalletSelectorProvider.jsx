@@ -77,10 +77,10 @@ const initHereForTelegram = async ({
 
     setAccounts(_selector.getState().accounts)
     setSelector(_selector)
-    // TODO: maybe use with timeout
-    // setTimeout(() => {
-    //   setLoading(false)
-    // }, 800)
+    // TODO: check if with timeout is smoother the loading
+    setTimeout(() => {
+      setLoading(false)
+    }, 800)
     setLoading(false)
   } catch (error) {
     console.error('Error in init Telegram >>>', error.message)

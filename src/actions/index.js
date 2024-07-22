@@ -1,21 +1,34 @@
-import { CONTRACTS } from '@/config'
+import { CONTRACTS, NEAR_CONTRACTS } from '@/config'
 import { Big } from '@/utils/big'
 import { parseNearAmount } from 'near-api-js/lib/utils/format'
 import { ONE_YOCTO_DEPOSIT } from '../hooks'
 import { getStakeStorageCost } from './user'
 import { ONE_YEAR_TS } from '@/constants/dates'
+import { COINS } from '@/constants/coinList'
+import { calculateReward as calculateRewardNear } from './near'
+import { calculateReward as calculateRewardUsdt } from './usdt'
+
+// TODO: move to better place
+const CONTRACT_ACTIONS = {
+  [COINS.near]: {
+    calculateReward: calculateRewardNear,
+  },
+  [COINS.usdt]: {
+    calculateReward: calculateRewardUsdt,
+  },
+}
 
 export const getPools = () => {
-  return CONTRACTS
+  return NEAR_CONTRACTS
 }
 
 export const getPool = () => {}
 
-export const getActiveSessions = async ({ viewMethod }) => {
+export const getActiveSessions = async ({ viewMethod, coin }) => {
   try {
     const promises = []
 
-    for (const contractId of CONTRACTS) {
+    for (const contractId of CONTRACTS[coin]) {
       promises.push(
         viewMethod({
           contractId,
@@ -29,7 +42,7 @@ export const getActiveSessions = async ({ viewMethod }) => {
     return sessions.map((session, index) => {
       return {
         ...session,
-        contractId: CONTRACTS[index],
+        contractId: CONTRACTS[coin][index],
       }
     })
   } catch (error) {
@@ -57,95 +70,24 @@ export const getSession = ({ viewMethod, sessionId, contractId }) => {
   return session
 }
 
-export const getStorageBalanceOf = async ({
-  viewMethod,
-  contractId,
-  accountId,
-}) => {
-  try {
-    const balanceOf = await viewMethod({
-      contractId,
-      method: 'storage_balance_of',
-      args: { account_id: accountId },
-    })
-
-    return balanceOf
-  } catch (error) {
-    console.error(error)
-    return null
-  }
-}
-
-const calculateReward = async ({ viewMethod, accountId, currentTimestamp }) => {
-  const now = Big(currentTimestamp)
-
-  const yieldSource = await getYieldSource({
-    viewMethod,
-    contractId: accountId,
-  })
-
-  const [{ apyValue, lastAccrualTs, accrued }, balanceOf] = await Promise.all([
-    getYieldInfo({
-      viewMethod,
-      yieldSource,
-      accountId,
-    }),
-    getStorageBalanceOf({
-      accountId,
-      contractId: yieldSource,
-      viewMethod,
-    }),
-  ])
-
-  const result = Big(balanceOf)
-    .div(1000)
-    .times(apyValue)
-    .div(ONE_YEAR_TS)
-    .times(now.minus(lastAccrualTs))
-
-  return Big(accrued).plus(result).toString()
-}
-
 export const getExpectedFinalReward = async ({
   viewMethod,
   accountId,
   currentTimestamp,
 }) => {
-  return calculateReward({ viewMethod, accountId, currentTimestamp })
+  // TODO: for near atm
+  return calculateRewardNear({ viewMethod, accountId, currentTimestamp })
 }
 
-export const getAccumulatedReward = async ({ viewMethod, accountId }) => {
+export const getAccumulatedReward = async ({ viewMethod, accountId, coin }) => {
+  console.log("In -> getAccumulatedReward")
   const currentTimestamp = Date.now() * 1e6
-
-  return await calculateReward({ viewMethod, accountId, currentTimestamp })
-}
-
-export const getYieldInfo = async ({ viewMethod, yieldSource, accountId }) => {
-  try {
-    const data = await viewMethod({
-      contractId: yieldSource,
-      method: 'get_user',
-      args: { account_id: accountId },
-    })
-
-    return {
-      apyValue: data.apy_value,
-      lastAccrualTs: data.last_accrual_ts,
-      accrued: data.accrued,
-    }
-  } catch (error) {
-    console.error(error)
-    return null
-  }
-}
-
-export const getYieldSource = async ({ viewMethod, contractId }) => {
-  const yieldSource = await viewMethod({
-    contractId,
-    method: 'get_yield_source',
+  console.log(CONTRACT_ACTIONS, coin, CONTRACT_ACTIONS[coin])
+  return CONTRACT_ACTIONS[coin].calculateReward({
+    viewMethod,
+    accountId,
+    currentTimestamp,
   })
-
-  return yieldSource
 }
 
 export const getPlayers = () => {}

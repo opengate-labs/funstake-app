@@ -12,8 +12,9 @@ export default function PoolList() {
 
   const { data: activeSessions, refetch: refetchActiveSessions } = useQuery({
     queryKey: ['active_sessions'],
-    queryFn: () => getActiveSessions({ viewMethod }),
+    queryFn: () => getActiveSessions({ viewMethod, coin }),
   })
+
 
   return (
     <>

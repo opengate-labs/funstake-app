@@ -1,7 +1,6 @@
 import { getPlayerChance, getSessionWinners } from '@/actions/user'
 import { VStack, Text, Button, HStack, Box, Flex } from '@chakra-ui/react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import humanizeDuration from '@/utils/etc/humanizeDuration'
 import { formatNearAmount } from 'near-api-js/lib/utils/format'
 import { useNear } from '@/hooks'
 import { useModal } from '@/providers/ModalProvider'
@@ -23,30 +22,34 @@ import {
   stake,
 } from '../actions'
 import { Timer } from './Timer'
+import { useParams } from 'react-router-dom'
 
 // TODO: simplify mutations
 export default function Session({ session, refetch, index }) {
   const { viewMethod, accountId, callMethod, signIn } = useNear()
+  const { coin } = useParams()
   const { openModal, closeModal } = useModal()
-  const { data: accumulatedReward } = useQuery({
-    queryKey: ['accumulated_reward', session.id],
-    queryFn: () =>
-      getAccumulatedReward({
-        viewMethod,
-        accountId: session.contractId,
-      }),
-    enabled: !!session,
-  })
-  const { data: expectedFinalReward } = useQuery({
-    queryKey: ['expected_final_reward', session.id],
-    queryFn: () =>
-      getExpectedFinalReward({
-        viewMethod,
-        accountId: session.contractId,
-        currentTimestamp: session.end,
-      }),
-    enabled: !!session,
-  })
+  // const { data: accumulatedReward } = useQuery({
+  //   queryKey: ['accumulated_reward', session.id],
+  //   queryFn: () =>
+  //     getAccumulatedReward({
+  //       viewMethod,
+  //       accountId: session.contractId,
+  //       coin,
+  //     }),
+  //   enabled: !!session,
+  // })
+  // console.log('accumulatedReward: ', accumulatedReward)
+  // const { data: expectedFinalReward } = useQuery({
+  //   queryKey: ['expected_final_reward', session.id],
+  //   queryFn: () =>
+  //     getExpectedFinalReward({
+  //       viewMethod,
+  //       accountId: session.contractId,
+  //       currentTimestamp: session.end,
+  //     }),
+  //   enabled: !!session,
+  // })
 
   const mutation = useMutation({
     mutationFn: ({ amount }) =>
@@ -158,7 +161,10 @@ export default function Session({ session, refetch, index }) {
 
   const isWinner = winners?.includes(accountId)
   const players = session?.players?._keys.length
-  console.log(new Date(session.end / 1000000))
+
+  const accumulatedReward = 0
+  const expectedFinalReward = 0
+
   return (
     <VStack
       mt={8}

@@ -1,8 +1,19 @@
+export const COINS = {
+  near: 'near',
+  usdt: 'usdt',
+}
+
 export const COINS_LIST = [
   {
     name: 'NEAR',
-    id: 'near',
+    id: COINS.near,
     icon: '/icons/near.svg',
+    isEnabled: true,
+  },
+  {
+    name: 'USDT',
+    id: COINS.usdt,
+    icon: '/icons/usdt.svg',
     isEnabled: true,
   },
   { name: 'ETH', id: 'eth', icon: '/icons/eth.svg' },
@@ -11,11 +22,7 @@ export const COINS_LIST = [
     id: 'wbtc',
     icon: '/icons/wbtc.svg',
   },
-  {
-    name: 'USDT',
-    id: 'usdt',
-    icon: '/icons/usdt.svg',
-  },
+
   {
     name: 'USDC',
     id: 'usdc',
