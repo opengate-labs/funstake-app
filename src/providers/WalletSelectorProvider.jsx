@@ -110,6 +110,7 @@ export const WalletSelectorProvider = ({ children }) => {
     setInTelegramApp(isTelegram)
 
     if (isTelegram) {
+      window.Telegram.WebApp.expand()
       initHereForTelegram({
         setAccounts,
         setLoading,

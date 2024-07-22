@@ -5,7 +5,6 @@ import {
   DrawerHeader,
   DrawerOverlay,
   DrawerContent,
-  DrawerCloseButton,
   Text,
   Button,
   Switch,
@@ -14,7 +13,7 @@ import {
 import { useNear } from '../hooks'
 
 export default function MobileMenu({ isOpen, onClose }) {
-  const { accountId, signIn, signOut } = useNear()
+  const { accountId, signOut } = useNear()
   const { colorMode, toggleColorMode } = useColorMode()
 
   return (
@@ -29,6 +28,8 @@ export default function MobileMenu({ isOpen, onClose }) {
 
           <DrawerBody>
             <Switch
+              w={'full'}
+              mb={4}
               cursor='pointer'
               onChange={toggleColorMode}
               isChecked={colorMode === 'dark'}

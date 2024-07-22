@@ -3,9 +3,6 @@ import { mode } from '@chakra-ui/theme-tools'
 import { switchTheme } from './Switch'
 
 const theme = extendTheme({
-  colors: {
-    backgroundColor: 'red',
-  },
   semanticTokens: {
     colors: {
       cardBg: {
@@ -31,11 +28,11 @@ const theme = extendTheme({
     body: `'Oswald', sans-serif`,
   },
   styles: {
-    global: {
+    global: (props) => ({
       body: {
-        bg: mode('white', 'linear-gradient(0deg, #343434, #111308)'),
+        bg: mode('white', '#111308')(props),
       },
-    },
+    }),
   },
   components: {
     Switch: switchTheme,
