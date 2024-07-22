@@ -6,5 +6,5 @@
 ## You can find contracts here [funstake-contracts](https://github.com/opengate-labs/funstake-contracts)
 
 
-## App is live on [app.funstake.io](https://funstake.io/)
+## App is live on [app.funstake.io](https://app.funstake.io/)
 ## Or in [Telegram Mini App](https://t.me/funstake_bot)
