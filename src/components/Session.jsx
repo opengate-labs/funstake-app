@@ -37,16 +37,16 @@ export default function Session({ session, refetch, index }) {
       }),
     enabled: !!session,
   })
-  const { data: expectedFinalReward } = useQuery({
-    queryKey: ['expected_final_reward', session.id],
-    queryFn: () =>
-      getExpectedFinalReward({
-        viewMethod,
-        accountId: session.contractId,
-        currentTimestamp: session.end,
-      }),
-    enabled: !!session,
-  })
+  // const { data: expectedFinalReward } = useQuery({
+  //   queryKey: ['expected_final_reward', session.id],
+  //   queryFn: () =>
+  //     getExpectedFinalReward({
+  //       viewMethod,
+  //       accountId: session.contractId,
+  //       currentTimestamp: session.end,
+  //     }),
+  //   enabled: !!session,
+  // })
 
   const mutation = useMutation({
     mutationFn: ({ amount }) =>
@@ -241,7 +241,7 @@ export default function Session({ session, refetch, index }) {
               </Text>
             )}
 
-            {!session.isFinalized && expectedFinalReward && (
+            {/* {!session.isFinalized && expectedFinalReward && (
               <Text>
                 Expected Prize:
                 <Text ml={1} as='span' fontWeight='bold' color='mainGreen'>
@@ -249,7 +249,7 @@ export default function Session({ session, refetch, index }) {
                   <NearIcon width='48px' />
                 </Text>
               </Text>
-            )}
+            )} */}
 
             {session?.reward > 0 && (
               <Text>

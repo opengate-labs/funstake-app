@@ -103,7 +103,8 @@ const calculateReward = async ({ viewMethod, accountId, currentTimestamp }) => {
     .div(ONE_YEAR_TS)
     .times(now.minus(lastAccrualTs))
 
-  return Big(accrued).plus(result).toString()
+  // return Big(accrued).plus(result).toString()
+  return accrued.toString()
 }
 
 export const getExpectedFinalReward = async ({
