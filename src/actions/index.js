@@ -1,6 +1,5 @@
-import { CONTRACTS, NEAR_CONTRACTS } from '@/config'
-import { ONE_YOCTO_DEPOSIT } from '../hooks'
-import { COINS } from '@/constants/coinList'
+import { COINS } from '@/constants/coins'
+import { ONE_YOCTO_DEPOSIT } from '@/constants/nearAmounts'
 import {
   calculateReward as calculateRewardNear,
   stake as stakeNear,
@@ -10,7 +9,6 @@ import {
   stake as stakeUsdt,
 } from './usdt'
 
-// TODO: move to better place
 const CONTRACT_ACTIONS = {
   [COINS.near]: {
     calculateReward: calculateRewardNear,
@@ -20,60 +18,6 @@ const CONTRACT_ACTIONS = {
     calculateReward: calculateRewardUsdt,
     stake: stakeUsdt,
   },
-}
-
-export const getPools = () => {
-  return NEAR_CONTRACTS
-}
-
-export const getPool = () => {}
-
-export const getActiveSessions = async ({ viewMethod, coin }) => {
-  try {
-    const promises = []
-
-    for (const contractId of CONTRACTS[coin]) {
-      if (contractId) {
-        promises.push(
-          viewMethod({
-            contractId,
-            method: 'get_session',
-          }),
-        )
-      }
-    }
-
-    const sessions = await Promise.all(promises)
-
-    return sessions.map((session, index) => {
-      return {
-        ...session,
-        contractId: CONTRACTS[coin][index],
-      }
-    })
-  } catch (error) {
-    console.error(error)
-    return []
-  }
-}
-
-export const getSessions = async ({ viewMethod, contractId }) => {
-  const sessions = await viewMethod({
-    contractId,
-    method: 'sessions',
-  })
-
-  return sessions
-}
-
-export const getSession = ({ viewMethod, sessionId, contractId }) => {
-  const session = viewMethod({
-    contractId,
-    method: 'get_session',
-    args: { sessionId },
-  })
-
-  return session
 }
 
 export const getExpectedFinalReward = async ({
@@ -99,28 +43,6 @@ export const getAccumulatedReward = async ({
     sessionContractId,
     sessionAmount,
   })
-}
-
-export const getPlayers = () => {}
-
-export const getPlayer = async ({
-  viewMethod,
-  sessionId,
-  address,
-  contractId,
-}) => {
-  try {
-    const player = await viewMethod({
-      contractId,
-      method: 'get_player',
-      args: { sessionId, address },
-    })
-
-    return player
-  } catch (error) {
-    console.error(error)
-    return null
-  }
 }
 
 export const stake = async ({

@@ -1,6 +1,6 @@
 import { formatAmount } from '@/utils/near/formatAmount'
 import { providers } from 'near-api-js'
-import { NetworkId } from '@/config'
+import { CONTRACTS, NetworkId } from '@/config'
 import { formatNearAmount } from 'near-api-js/lib/utils/format'
 
 const provider = new providers.JsonRpcProvider({
@@ -122,4 +122,82 @@ export const getStakeStorageCost = async ({ viewMethod, contractId }) => {
     console.error(error)
     return 0
   }
+}
+
+export const getPlayer = async ({
+  viewMethod,
+  sessionId,
+  address,
+  contractId,
+}) => {
+  try {
+    const player = await viewMethod({
+      contractId,
+      method: 'get_player',
+      args: { sessionId, address },
+    })
+
+    return player
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
+export const getActiveSessions = async ({ viewMethod, coin }) => {
+  try {
+    const promises = []
+
+    for (const contractId of CONTRACTS[coin]) {
+      if (contractId) {
+        promises.push(
+          viewMethod({
+            contractId,
+            method: 'get_session',
+          }),
+        )
+      }
+    }
+
+    const sessions = await Promise.all(promises)
+
+    return sessions.map((session, index) => {
+      return {
+        ...session,
+        contractId: CONTRACTS[coin][index],
+      }
+    })
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
+
+export const getSessionWinners = async ({
+  viewMethod,
+  sessionId,
+  contractId,
+}) => {
+  const result = await viewMethod({
+    contractId,
+    method: 'get_session_winners',
+    args: { sessionId },
+  })
+
+  return result
+}
+
+export const getPlayerChance = async ({
+  viewMethod,
+  sessionId,
+  accountId,
+  contractId,
+}) => {
+  const result = await viewMethod({
+    contractId,
+    method: 'get_player_chance',
+    args: { sessionId, address: accountId },
+  })
+
+  return result
 }

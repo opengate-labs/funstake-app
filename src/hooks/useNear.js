@@ -1,13 +1,9 @@
-import { useCallback } from 'react'
-import { useWalletSelector } from './useWalletSelector'
-import * as nearAPI from 'near-api-js'
-import { actionCreators, encodeSignedDelegate } from '@near-js/transactions'
-
 import { NetworkId, WALLETS_PREFIX } from '@/config'
-import { EIGHTY_TGAS, THIRTY_TGAS } from '@/constants/nearAmounts'
-
-export const NO_DEPOSIT = '0'
-export const ONE_YOCTO_DEPOSIT = '1'
+import { EIGHTY_TGAS, NO_DEPOSIT, THIRTY_TGAS } from '@/constants/nearAmounts'
+import { actionCreators, encodeSignedDelegate } from '@near-js/transactions'
+import * as nearAPI from 'near-api-js'
+import { useCallback } from 'react'
+import { useWalletSelector } from '@/hooks'
 
 export const useNear = () => {
   const { isLoadingWallet, selector, modal, accountId } = useWalletSelector()
@@ -257,6 +253,6 @@ export const useNear = () => {
     viewMethod,
     callMethod,
     signAndDelegate,
-    sendMultipleTransactions
+    sendMultipleTransactions,
   }
 }

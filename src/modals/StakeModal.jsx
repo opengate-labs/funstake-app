@@ -1,26 +1,26 @@
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { getBalance, getBalanceOf } from '@/actions/common'
+import { COINS } from '@/constants/coins'
+import { useNear } from '@/hooks'
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
   Button,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Input,
-  FormErrorMessage,
-  InputRightElement,
   InputGroup,
+  InputRightElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
 } from '@chakra-ui/react'
-import { useNear } from '../hooks'
 import { useQuery } from '@tanstack/react-query'
 import Big from 'big.js'
-import { COINS } from '@/constants/coinList'
-import { getBalance, getBalanceOf } from '@/actions/common'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 
 export default function StakeModal({
   onSubmit,

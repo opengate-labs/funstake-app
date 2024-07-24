@@ -1,4 +1,4 @@
-import { COINS } from "@/constants/coinList"
+import { COINS } from "@/constants/coins"
 
 export const NetworkId = import.meta.env.VITE_APP_NETWORK_ID
 

@@ -1,6 +1,19 @@
+import NearIcon from '@/components/NearIcon'
+import UsdtIcon from '@/components/UsdtIcon'
+
 export const COINS = {
   near: 'near',
   usdt: 'usdt',
+}
+
+export const COIN_DECIMALS = {
+  [COINS.near]: 24,
+  [COINS.usdt]: 6,
+}
+
+export const COIN_SYMBOLS = {
+  [COINS.near]: NearIcon,
+  [COINS.usdt]: UsdtIcon,
 }
 
 export const COINS_LIST = [

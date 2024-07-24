@@ -1,7 +1,10 @@
-import { getStakeStorageCost, getYieldSource } from '../common'
-import { getPlayer } from '..'
 import { parseNearAmount } from 'near-api-js/lib/utils/format'
 import { Big } from '@/utils/big'
+import {
+  getPlayer,
+  getStakeStorageCost,
+  getYieldSource,
+} from '@/actions/common'
 
 export const getYieldInfo = async ({ viewMethod, yieldSource, accountId }) => {
   try {

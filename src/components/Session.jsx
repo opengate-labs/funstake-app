@@ -1,29 +1,24 @@
-import { getPlayerChance, getSessionWinners } from '@/actions/user'
-import { VStack, Text, Button, HStack, Box } from '@chakra-ui/react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { cashout, claim, getAccumulatedReward, stake } from '@/actions'
+import { getPlayer, getPlayerChance, getSessionWinners } from '@/actions/common'
+import { COIN_DECIMALS, COIN_SYMBOLS } from '@/constants/coins'
 import { useNear } from '@/hooks'
 import { useModal } from '@/providers/ModalProvider'
-import NearIcon from '@/components/NearIcon'
+import { formatAmount } from '@/utils/near/formatAmount'
 import {
   Accordion,
-  AccordionItem,
   AccordionButton,
-  AccordionPanel,
   AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Button,
+  HStack,
+  Text,
+  VStack,
 } from '@chakra-ui/react'
-
-import {
-  cashout,
-  claim,
-  getAccumulatedReward,
-  // getExpectedFinalReward,
-  getPlayer,
-  stake,
-} from '../actions'
-import { Timer } from './Timer'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
-import { formatAmount } from '@/utils/near/formatAmount'
-import { COINS } from '@/constants/coinList'
+import { Timer } from './Timer'
 
 // TODO: simplify mutations
 export default function Session({ session, refetch }) {
@@ -172,16 +167,8 @@ export default function Session({ session, refetch }) {
 
   const isWinner = winners?.includes(accountId)
   const players = session?.players?._keys.length
-
-  const coinDecimalsMapping = {
-    [COINS.near]: 24,
-    [COINS.usdt]: 6,
-  }
-
-  const coinIconsMapping = {
-    [COINS.near]: <NearIcon width='56px' />,
-    [COINS.usdt]: 'USDT',
-  }
+  const CoinIcon = COIN_SYMBOLS[coin]
+  const coinDecimal = COIN_DECIMALS[coin]
 
   return (
     <VStack
@@ -213,9 +200,8 @@ export default function Session({ session, refetch }) {
                 {isEnded ? '(Ended)' : ''}
               </Text>
               <Text fontSize={'x-large'} fontWeight={500}>
-                Total Deposit:{' '}
-                {formatAmount(session.amount, coinDecimalsMapping[coin])}{' '}
-                {coinIconsMapping[coin]}
+                Total Deposit: {formatAmount(session.amount, coinDecimal)}{' '}
+                <CoinIcon />
               </Text>
               {isEnded ? (
                 <Text>
@@ -231,9 +217,8 @@ export default function Session({ session, refetch }) {
             {player && (
               <>
                 <Text fontSize={'large'} fontWeight={500} color={'mainGreen'}>
-                  My Deposit:{' '}
-                  {formatAmount(player.amount, coinDecimalsMapping[coin])}{' '}
-                  {coinIconsMapping[coin]}
+                  My Deposit: {formatAmount(player.amount, coinDecimal)}{' '}
+                  <CoinIcon />
                 </Text>
                 {chance && Number(chance) ? (
                   <Text
@@ -267,13 +252,8 @@ export default function Session({ session, refetch }) {
               <Text>
                 Accumulated Prize:{' '}
                 <Text as='span' color='mainGreen'>
-                  ~
-                  {formatAmount(
-                    accumulatedReward,
-                    coinDecimalsMapping[coin],
-                    6,
-                  )}{' '}
-                  {coinIconsMapping[coin]}
+                  ~{formatAmount(accumulatedReward, coinDecimal, 6)}{' '}
+                  <CoinIcon width='48px' />
                 </Text>
               </Text>
             ) : null}
@@ -290,9 +270,8 @@ export default function Session({ session, refetch }) {
 
             {session?.reward > 0 && (
               <Text>
-                Final Reward:{' '}
-                {formatAmount(session.reward, coinDecimalsMapping[coin])}{' '}
-                {coinIconsMapping[coin]}
+                Final Reward: {formatAmount(session.reward, coinDecimal)}{' '}
+                <CoinIcon />
               </Text>
             )}
           </AccordionPanel>

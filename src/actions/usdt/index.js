@@ -1,22 +1,27 @@
-import Big from 'big.js'
-import { getMetadata, getToken, getYieldSource } from '../common'
-import { THIRTY_TGAS, THREE_HUNDRED_TGAS } from '@/constants/nearAmounts'
-import { ONE_YOCTO_DEPOSIT } from '@/hooks/useNear'
+import { getMetadata, getToken, getYieldSource } from '@/actions/common'
+import {
+  ONE_YOCTO_DEPOSIT,
+  THIRTY_TGAS,
+  THREE_HUNDRED_TGAS,
+} from '@/constants/nearAmounts'
 import { parseAmount } from '@/utils/near/parseAmount'
+import Big from 'big.js'
 
 export const calculateReward = async ({
   viewMethod,
   sessionContractId,
   sessionAmount,
 }) => {
-  const yieldSourceContractId = await getYieldSource({
-    viewMethod,
-    contractId: sessionContractId,
-  })
-  const tokenAccountId = await getToken({
-    viewMethod,
-    contractId: sessionContractId,
-  })
+  const [yieldSourceContractId, tokenAccountId] = await Promise.all([
+    await getYieldSource({
+      viewMethod,
+      contractId: sessionContractId,
+    }),
+    getToken({
+      viewMethod,
+      contractId: sessionContractId,
+    }),
+  ])
 
   const yieldBalanceData = await viewMethod({
     contractId: yieldSourceContractId,

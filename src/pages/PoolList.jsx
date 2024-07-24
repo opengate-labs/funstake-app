@@ -4,7 +4,7 @@ import Session from '@/components/Session'
 import { useNear } from '../hooks'
 import { useQuery } from '@tanstack/react-query'
 import { Center, Container, Spinner, Text } from '@chakra-ui/react'
-import { getActiveSessions } from '../actions'
+import { getActiveSessions } from '@/actions/common'
 
 export default function PoolList() {
   const { coin } = useParams()
