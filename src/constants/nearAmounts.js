@@ -3,4 +3,8 @@ export const SIXTY_TGAS = '60000000000000'
 export const FIFTY_TGAS = '50000000000000'
 export const FORTY_TGAS = '40000000000000'
 export const THIRTY_TGAS = '30000000000000'
+export const THREE_HUNDRED_TGAS = '300000000000000'
 export const TGAS_FOR_CLAIM = '27000000000000'
+
+export const NO_DEPOSIT = '0'
+export const ONE_YOCTO_DEPOSIT = '1'

@@ -3,31 +3,48 @@ import Header from '@/components/Header'
 import Session from '@/components/Session'
 import { useNear } from '../hooks'
 import { useQuery } from '@tanstack/react-query'
-import { Container } from '@chakra-ui/react'
-import { getActiveSessions } from '../actions'
+import { Center, Container, Spinner, Text } from '@chakra-ui/react'
+import { getActiveSessions } from '@/actions/common'
 
 export default function PoolList() {
   const { coin } = useParams()
   const { viewMethod } = useNear()
 
-  const { data: activeSessions, refetch: refetchActiveSessions } = useQuery({
-    queryKey: ['active_sessions'],
-    queryFn: () => getActiveSessions({ viewMethod }),
+  const {
+    data: activeSessions,
+    isLoading,
+    refetch: refetchActiveSessions,
+  } = useQuery({
+    queryKey: ['active_sessions', coin],
+    queryFn: () => getActiveSessions({ viewMethod, coin }),
   })
 
   return (
     <>
       <Header />
       <Container>
-        {activeSessions?.length &&
-          activeSessions.map((session, index) => (
-            <Session
-              refetch={refetchActiveSessions}
-              key={session.id}
-              session={session}
-              index={index}
-            />
-          ))}
+        {isLoading ? (
+          <Center mt={14}>
+            <Spinner color={'mainGreen'} />
+          </Center>
+        ) : (
+          <>
+            {activeSessions?.length ? (
+              activeSessions.map((session, index) => (
+                <Session
+                  refetch={refetchActiveSessions}
+                  key={session.id}
+                  session={session}
+                  index={index}
+                />
+              ))
+            ) : (
+              <Text mt={10} textAlign={'center'} fontSize={'lg'}>
+                No Active Pools
+              </Text>
+            )}
+          </>
+        )}
       </Container>
     </>
   )

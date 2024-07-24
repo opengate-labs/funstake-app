@@ -1,6 +1,6 @@
 import Header from '@/components/Header'
-import { Container, Text, Wrap } from '@chakra-ui/react'
-import { COINS_LIST } from '@/constants/coinList'
+import { Container, Wrap } from '@chakra-ui/react'
+import { COINS_LIST } from '@/constants/coins'
 import { CoinItem } from '@/components/CoinItem'
 
 export default function Home() {

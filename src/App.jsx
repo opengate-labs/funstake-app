@@ -1,4 +1,4 @@
-import { ChakraProvider, Flex, Text } from '@chakra-ui/react'
+import { ChakraProvider } from '@chakra-ui/react'
 import { WalletSelectorProvider } from '@/providers/WalletSelectorProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import ModalProvider from '@/providers/ModalProvider'

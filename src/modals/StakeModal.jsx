@@ -1,37 +1,52 @@
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { getBalance, getBalanceOf } from '@/actions/common'
+import { COINS } from '@/constants/coins'
+import { useNear } from '@/hooks'
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
   Button,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Input,
-  FormErrorMessage,
-  InputRightElement,
   InputGroup,
+  InputRightElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
 } from '@chakra-ui/react'
-import { useNear } from '../hooks'
 import { useQuery } from '@tanstack/react-query'
-import { getBalance } from '@/actions/user'
 import Big from 'big.js'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 
 export default function StakeModal({
   onSubmit,
   title = 'Stake',
   isOpen,
   onClose,
+  coin,
+  contractId: funStakeContractId,
 }) {
   const [isLoading, toggleLoading] = useState(false)
-  const { accountId } = useNear()
+  const { accountId, viewMethod } = useNear()
+  const isFtToken = coin !== COINS.near
+
   const { data: balance } = useQuery({
-    queryKey: ['balance', accountId],
-    queryFn: () => getBalance({ accountId }),
+    queryKey: ['balance', accountId, coin],
+    queryFn: () => {
+      if (isFtToken) {
+        return getBalanceOf({
+          viewMethod,
+          accountId,
+          contractId: funStakeContractId,
+        })
+      }
+
+      return getBalance({ accountId })
+    },
     enabled: !!accountId,
   })
 
@@ -48,7 +63,7 @@ export default function StakeModal({
     onSubmit({ amount, toggleLoading })
   }
   const onMax = async () => {
-    setValue('amount', balance)
+    setValue('amount', balance.replace(/,/g, ''))
   }
 
   return (
@@ -64,13 +79,13 @@ export default function StakeModal({
         <ModalBody>
           <FormControl isInvalid={errors.amount}>
             <FormLabel fontSize={'sm'} fontWeight={600}>
-              Balance: {balance}
+              Balance: {balance} {coin.toUpperCase()}
             </FormLabel>
 
             <InputGroup>
               <Input
                 id='amount'
-                placeholder='Amount in Near'
+                placeholder={`Amount in ${coin.toUpperCase()}`}
                 _focus={{ borderColor: 'mainGreen' }}
                 _focusVisible={{ borderColor: 'mainGreen' }}
                 {...register('amount', {
@@ -85,7 +100,7 @@ export default function StakeModal({
                   },
                   validate: (value) => {
                     const amount = Big(value)
-                    const maxAmount = Big(balance)
+                    const maxAmount = Big(balance.replace(/,/g, ''))
                     const minAmount = Big(0)
 
                     if (amount.gt(maxAmount)) {

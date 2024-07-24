@@ -1,13 +1,9 @@
-import { useCallback } from 'react'
-import { useWalletSelector } from './useWalletSelector'
-import * as nearAPI from 'near-api-js'
-import { actionCreators, encodeSignedDelegate } from '@near-js/transactions'
-
 import { NetworkId, WALLETS_PREFIX } from '@/config'
-import { EIGHTY_TGAS, THIRTY_TGAS } from '@/constants/nearAmounts'
-
-export const NO_DEPOSIT = '0'
-export const ONE_YOCTO_DEPOSIT = '1'
+import { EIGHTY_TGAS, NO_DEPOSIT, THIRTY_TGAS } from '@/constants/nearAmounts'
+import { actionCreators, encodeSignedDelegate } from '@near-js/transactions'
+import * as nearAPI from 'near-api-js'
+import { useCallback } from 'react'
+import { useWalletSelector } from '@/hooks'
 
 export const useNear = () => {
   const { isLoadingWallet, selector, modal, accountId } = useWalletSelector()
@@ -118,6 +114,66 @@ export const useNear = () => {
     [selector, accountId],
   )
 
+  const sendMultipleTransactions = useCallback(
+    async ({ transactions = [] }) => {
+      try {
+        if (!selector) throw new Error('Wallet is not initialized')
+        if (!accountId) throw new Error('User is not signed in')
+
+        if (!transactions.length) throw new Error('No transactions provided')
+
+        for (const tx of transactions) {
+          if (!tx.contractId)
+            throw new Error(
+              'ContractId is not provided in one of the transactions',
+            )
+          if (!tx.method)
+            throw new Error('Method is not provided in one of the transactions')
+        }
+
+        const wallet = await selector.wallet()
+
+        const formattedTransactions = transactions.map((tx) => ({
+          receiverId: tx.contractId,
+          actions: [
+            {
+              type: 'FunctionCall',
+              params: {
+                methodName: tx.method,
+                args: tx.args || {},
+                gas: (tx.gas || THIRTY_TGAS).toString(),
+                deposit: (tx.deposit || NO_DEPOSIT).toString(),
+              },
+            },
+          ],
+        }))
+
+        const outcome = await wallet.signAndSendTransactions({
+          transactions: formattedTransactions,
+        })
+
+        const results = outcome.map((o) =>
+          nearAPI.providers.getTransactionLastResult(o),
+        )
+
+        for (const result of results) {
+          if (result?.status?.Failure) {
+            throw new Error('One of the transactions failed')
+          }
+        }
+
+        return {
+          results,
+          success: true,
+        }
+      } catch (err) {
+        console.error('Error on callMethod', err)
+        return { results: null, success: false }
+      }
+    },
+    [selector, accountId],
+  )
+
   const signAndDelegate = useCallback(
     async ({
       receiverId,
@@ -197,5 +253,6 @@ export const useNear = () => {
     viewMethod,
     callMethod,
     signAndDelegate,
+    sendMultipleTransactions,
   }
 }

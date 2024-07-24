@@ -1,4 +1,4 @@
-import { COINS_LIST } from '@/constants/coinList'
+import { COINS_LIST } from '@/constants/coins'
 import { Navigate, useParams } from 'react-router-dom'
 
 export default function CheckCoinPool({ children }) {
