@@ -1,6 +1,7 @@
-import Big from "big.js"
-import { ONE_YEAR_TS } from "@/constants/dates"
-import { getStorageBalanceOf, getYieldSource } from "../common"
+import { getStakeStorageCost, getYieldSource } from '../common'
+import { getPlayer } from '..'
+import { parseNearAmount } from 'near-api-js/lib/utils/format'
+import { Big } from '@/utils/big'
 
 export const getYieldInfo = async ({ viewMethod, yieldSource, accountId }) => {
   try {
@@ -21,35 +22,77 @@ export const getYieldInfo = async ({ viewMethod, yieldSource, accountId }) => {
   }
 }
 
-export const calculateReward = async ({ viewMethod, accountId, currentTimestamp }) => {
-  const now = Big(currentTimestamp)
+export const calculateReward = async ({
+  viewMethod,
+  sessionContractId,
+  // currentTimestamp,
+}) => {
+  // const now = Big(currentTimestamp)
 
-  console.log("Contract id : ", accountId)
+  console.log('Contract id : ', sessionContractId)
   const yieldSource = await getYieldSource({
     viewMethod,
-    contractId: accountId,
+    contractId: sessionContractId,
   })
 
-  console.log("yieldSource: ", yieldSource)
+  console.log('yieldSource: ', yieldSource)
 
-  const [{ apyValue, lastAccrualTs, accrued }, balanceOf] = await Promise.all([
+  const [{ accrued } /*, balanceOf */] = await Promise.all([
     getYieldInfo({
       viewMethod,
       yieldSource,
-      accountId,
+      accountId: sessionContractId,
     }),
-    getStorageBalanceOf({
-      accountId,
-      contractId: yieldSource,
-      viewMethod,
-    }),
+    // getStorageBalanceOf({
+    //   accountId: sessionContractId,
+    //   contractId: yieldSource,
+    //   viewMethod,
+    // }),
   ])
 
-  const result = Big(balanceOf)
-    .div(1000)
-    .times(apyValue)
-    .div(ONE_YEAR_TS)
-    .times(now.minus(lastAccrualTs))
+  // TODO: Postponed dynamic calculation of expected rewards
+  // const result = Big(balanceOf)
+  //   .div(1000)
+  //   .times(apyValue)
+  //   .div(ONE_YEAR_TS)
+  //   .times(now.minus(lastAccrualTs))
 
-  return Big(accrued).plus(result).toString()
+  // return Big(accrued).plus(result).toString()
+  return accrued.toString()
+}
+
+export const stake = async ({
+  sessionId,
+  address,
+  contractId,
+  viewMethod,
+  callMethod,
+  amount,
+}) => {
+  try {
+    const player = await getPlayer({
+      sessionId,
+      address,
+      contractId,
+      viewMethod,
+    })
+
+    const storageCost = player
+      ? Big(0)
+      : await getStakeStorageCost({ viewMethod, contractId })
+
+    const deposit = Big(parseNearAmount(amount)).plus(storageCost)
+
+    const result = await callMethod({
+      contractId,
+      method: 'stake',
+      deposit: deposit.toString(),
+      gas: '130000000000000', //TODO: move to constants
+    })
+
+    return result
+  } catch (error) {
+    console.error(error)
+    return null
+  }
 }

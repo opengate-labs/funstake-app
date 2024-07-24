@@ -1,20 +1,24 @@
 import { CONTRACTS, NEAR_CONTRACTS } from '@/config'
-import { Big } from '@/utils/big'
-import { parseNearAmount } from 'near-api-js/lib/utils/format'
 import { ONE_YOCTO_DEPOSIT } from '../hooks'
-import { getStakeStorageCost } from './user'
-import { ONE_YEAR_TS } from '@/constants/dates'
 import { COINS } from '@/constants/coinList'
-import { calculateReward as calculateRewardNear } from './near'
-import { calculateReward as calculateRewardUsdt } from './usdt'
+import {
+  calculateReward as calculateRewardNear,
+  stake as stakeNear,
+} from './near'
+import {
+  calculateReward as calculateRewardUsdt,
+  stake as stakeUsdt,
+} from './usdt'
 
 // TODO: move to better place
 const CONTRACT_ACTIONS = {
   [COINS.near]: {
     calculateReward: calculateRewardNear,
+    stake: stakeNear,
   },
   [COINS.usdt]: {
     calculateReward: calculateRewardUsdt,
+    stake: stakeUsdt,
   },
 }
 
@@ -29,12 +33,14 @@ export const getActiveSessions = async ({ viewMethod, coin }) => {
     const promises = []
 
     for (const contractId of CONTRACTS[coin]) {
-      promises.push(
-        viewMethod({
-          contractId,
-          method: 'get_session',
-        }),
-      )
+      if (contractId) {
+        promises.push(
+          viewMethod({
+            contractId,
+            method: 'get_session',
+          }),
+        )
+      }
     }
 
     const sessions = await Promise.all(promises)
@@ -79,14 +85,19 @@ export const getExpectedFinalReward = async ({
   return calculateRewardNear({ viewMethod, accountId, currentTimestamp })
 }
 
-export const getAccumulatedReward = async ({ viewMethod, accountId, coin }) => {
-  console.log("In -> getAccumulatedReward")
+export const getAccumulatedReward = async ({
+  viewMethod,
+  sessionContractId,
+  coin,
+  sessionAmount,
+}) => {
   const currentTimestamp = Date.now() * 1e6
-  console.log(CONTRACT_ACTIONS, coin, CONTRACT_ACTIONS[coin])
+
   return CONTRACT_ACTIONS[coin].calculateReward({
     viewMethod,
-    accountId,
     currentTimestamp,
+    sessionContractId,
+    sessionAmount,
   })
 }
 
@@ -119,31 +130,19 @@ export const stake = async ({
   viewMethod,
   contractId,
   sessionId,
+  coin,
+  sendMultipleTransactions,
 }) => {
-  const player = await getPlayer({ sessionId, address, contractId, viewMethod })
-  let storageCost = Big(0)
-
-  if (!player) {
-    storageCost = Big(
-      (await getStakeStorageCost({ viewMethod, contractId })) || 0,
-    )
-  }
-
-  const deposit = Big(parseNearAmount(amount)).plus(storageCost)
-
-  const result = await callMethod({
+  return CONTRACT_ACTIONS[coin].stake({
+    amount,
+    sessionId,
+    address,
     contractId,
-    method: 'stake',
-    deposit: deposit.toString(),
-    gas: '130000000000000', //TODO: move to constants
+    viewMethod,
+    callMethod,
+    sendMultipleTransactions,
   })
-
-  console.log('Stake action result: ', result)
-
-  return result
 }
-
-export const unstake = () => {}
 
 export const claim = async ({ callMethod, sessionId, contractId }) => {
   const result = await callMethod({
@@ -152,7 +151,7 @@ export const claim = async ({ callMethod, sessionId, contractId }) => {
     args: {
       sessionId,
     },
-    gas: '50000000000000', //TODO: move to constants
+    gas: '150000000000000', //TODO: move to constants
   })
 
   console.log('Claim action result: ', result)
@@ -168,7 +167,7 @@ export const cashout = async ({ callMethod, sessionId, contractId }) => {
     args: {
       sessionId,
     },
-    gas: '80000000000000', //TODO: move to constants
+    gas: '210000000000000', //TODO: move to constants
   })
 
   console.log('Cashout action result: ', result)

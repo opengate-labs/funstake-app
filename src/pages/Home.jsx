@@ -1,5 +1,5 @@
 import Header from '@/components/Header'
-import { Container, Text, Wrap } from '@chakra-ui/react'
+import { Container, Wrap } from '@chakra-ui/react'
 import { COINS_LIST } from '@/constants/coinList'
 import { CoinItem } from '@/components/CoinItem'
 

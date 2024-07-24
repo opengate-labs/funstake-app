@@ -1,7 +1,6 @@
 import { getPlayerChance, getSessionWinners } from '@/actions/user'
-import { VStack, Text, Button, HStack, Box, Flex } from '@chakra-ui/react'
+import { VStack, Text, Button, HStack, Box } from '@chakra-ui/react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { formatNearAmount } from 'near-api-js/lib/utils/format'
 import { useNear } from '@/hooks'
 import { useModal } from '@/providers/ModalProvider'
 import NearIcon from '@/components/NearIcon'
@@ -17,29 +16,37 @@ import {
   cashout,
   claim,
   getAccumulatedReward,
-  getExpectedFinalReward,
+  // getExpectedFinalReward,
   getPlayer,
   stake,
 } from '../actions'
 import { Timer } from './Timer'
 import { useParams } from 'react-router-dom'
+import { formatAmount } from '@/utils/near/formatAmount'
+import { COINS } from '@/constants/coinList'
 
 // TODO: simplify mutations
-export default function Session({ session, refetch, index }) {
-  const { viewMethod, accountId, callMethod, signIn } = useNear()
+export default function Session({ session, refetch }) {
+  const {
+    viewMethod,
+    accountId,
+    callMethod,
+    signIn,
+    sendMultipleTransactions,
+  } = useNear()
   const { coin } = useParams()
   const { openModal, closeModal } = useModal()
-  // const { data: accumulatedReward } = useQuery({
-  //   queryKey: ['accumulated_reward', session.id],
-  //   queryFn: () =>
-  //     getAccumulatedReward({
-  //       viewMethod,
-  //       accountId: session.contractId,
-  //       coin,
-  //     }),
-  //   enabled: !!session,
-  // })
-  // console.log('accumulatedReward: ', accumulatedReward)
+  const { data: accumulatedReward } = useQuery({
+    queryKey: ['accumulated_reward', session.id, coin],
+    queryFn: () =>
+      getAccumulatedReward({
+        viewMethod,
+        sessionContractId: session.contractId,
+        coin,
+        sessionAmount: session.amount,
+      }),
+    enabled: !!session,
+  })
   // const { data: expectedFinalReward } = useQuery({
   //   queryKey: ['expected_final_reward', session.id],
   //   queryFn: () =>
@@ -51,7 +58,7 @@ export default function Session({ session, refetch, index }) {
   //   enabled: !!session,
   // })
 
-  const mutation = useMutation({
+  const stakeMutation = useMutation({
     mutationFn: ({ amount }) =>
       stake({
         callMethod,
@@ -60,6 +67,8 @@ export default function Session({ session, refetch, index }) {
         contractId: session.contractId,
         sessionId: session.id,
         address: accountId,
+        coin,
+        sendMultipleTransactions,
       }),
     onSuccess: (data, { toggleLoading }) => {
       refetch()
@@ -99,8 +108,10 @@ export default function Session({ session, refetch, index }) {
 
     openModal('StakeModal', {
       sessionId,
+      coin,
+      contractId: session.contractId,
       onSubmit: async ({ toggleLoading, amount }) => {
-        mutation.mutate({ amount, toggleLoading })
+        stakeMutation.mutate({ amount, toggleLoading })
       },
     })
   }
@@ -162,8 +173,15 @@ export default function Session({ session, refetch, index }) {
   const isWinner = winners?.includes(accountId)
   const players = session?.players?._keys.length
 
-  const accumulatedReward = 0
-  const expectedFinalReward = 0
+  const coinDecimalsMapping = {
+    [COINS.near]: 24,
+    [COINS.usdt]: 6,
+  }
+
+  const coinIconsMapping = {
+    [COINS.near]: <NearIcon width='56px' />,
+    [COINS.usdt]: 'USDT',
+  }
 
   return (
     <VStack
@@ -191,10 +209,13 @@ export default function Session({ session, refetch, index }) {
                 borderColor={'cardBorder'}
                 fontWeight='light'
               >
-                Near Pool #{Number(session.id) + 1} {isEnded ? '(Ended)' : ''}
+                {coin.toUpperCase()} Pool #{Number(session.id) + 1}{' '}
+                {isEnded ? '(Ended)' : ''}
               </Text>
               <Text fontSize={'x-large'} fontWeight={500}>
-                Total Deposit: {formatNearAmount(session.amount)} <NearIcon />
+                Total Deposit:{' '}
+                {formatAmount(session.amount, coinDecimalsMapping[coin])}{' '}
+                {coinIconsMapping[coin]}
               </Text>
               {isEnded ? (
                 <Text>
@@ -210,8 +231,9 @@ export default function Session({ session, refetch, index }) {
             {player && (
               <>
                 <Text fontSize={'large'} fontWeight={500} color={'mainGreen'}>
-                  My Deposit: {formatNearAmount(player.amount)}{' '}
-                  <NearIcon width='56px' />
+                  My Deposit:{' '}
+                  {formatAmount(player.amount, coinDecimalsMapping[coin])}{' '}
+                  {coinIconsMapping[coin]}
                 </Text>
                 {chance && Number(chance) ? (
                   <Text
@@ -225,29 +247,38 @@ export default function Session({ session, refetch, index }) {
               </>
             )}
 
-            {winners?.length && (
+            {winners?.length ? (
               <Text fontSize={'large'} fontWeight={500} color={'mainGreen'}>
                 Winner: {winners.join(', ')}
               </Text>
-            )}
+            ) : null}
 
-            <Text>
-              Start Date: {new Date(session.start / 1000000).toLocaleString()}
-            </Text>
+            {session.start ? (
+              <Text>
+                {/* TODO: better date formatting */}
+                {/* Start: {format(new Date((BigInt(session.start) / 1000000n)).toString())} */}
+                Start: {new Date(session.start / 1000000).toLocaleString()}
+              </Text>
+            ) : null}
 
             <Text>Players: {players}</Text>
 
-            {!session.isFinalized && accumulatedReward && (
+            {!session.isFinalized && accumulatedReward && players ? (
               <Text>
                 Accumulated Prize:{' '}
                 <Text as='span' color='mainGreen'>
-                  ~{formatNearAmount(accumulatedReward, 6)}{' '}
-                  <NearIcon width='48px' />
+                  ~
+                  {formatAmount(
+                    accumulatedReward,
+                    coinDecimalsMapping[coin],
+                    6,
+                  )}{' '}
+                  {coinIconsMapping[coin]}
                 </Text>
               </Text>
-            )}
+            ) : null}
 
-            {!session.isFinalized && expectedFinalReward && (
+            {/* {!session.isFinalized && expectedFinalReward && (
               <Text>
                 Expected Prize:
                 <Text ml={1} as='span' fontWeight='bold' color='mainGreen'>
@@ -255,12 +286,13 @@ export default function Session({ session, refetch, index }) {
                   <NearIcon width='48px' />
                 </Text>
               </Text>
-            )}
+            )} */}
 
             {session?.reward > 0 && (
               <Text>
-                Final Reward: {formatNearAmount(session.reward, 6)}{' '}
-                <NearIcon width='48px' />
+                Final Reward:{' '}
+                {formatAmount(session.reward, coinDecimalsMapping[coin])}{' '}
+                {coinIconsMapping[coin]}
               </Text>
             )}
           </AccordionPanel>
@@ -275,7 +307,7 @@ export default function Session({ session, refetch, index }) {
 
           {session.isFinalized && player && (
             <>
-              {isWinner && 'You are a winner!'}
+              {isWinner ? 'You are a winner!' : 'You Lose!'}
               <Button
                 borderRadius={'32px'}
                 w={'full'}
