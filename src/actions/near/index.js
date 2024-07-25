@@ -6,6 +6,25 @@ import {
   getYieldSource,
 } from '@/actions/common'
 
+export const getYieldPercentage = async ({
+  viewMethod,
+  yieldSourceContractId,
+  sessionContractId,
+}) => {
+  try {
+    const { apyValue } = await getYieldInfo({
+      viewMethod,
+      yieldSource: yieldSourceContractId,
+      accountId: sessionContractId,
+    })
+
+    return apyValue / 100
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
 export const getYieldInfo = async ({ viewMethod, yieldSource, accountId }) => {
   try {
     const data = await viewMethod({

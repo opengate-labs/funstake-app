@@ -3,21 +3,43 @@ import { ONE_YOCTO_DEPOSIT } from '@/constants/nearAmounts'
 import {
   calculateReward as calculateRewardNear,
   stake as stakeNear,
+  getYieldPercentage as getYieldPercentageNear,
 } from './near'
 import {
   calculateReward as calculateRewardUsdt,
   stake as stakeUsdt,
+  getYieldPercentage as getYieldPercentageUsdt,
 } from './usdt'
+import { getYieldSource } from './common'
 
 const CONTRACT_ACTIONS = {
   [COINS.near]: {
     calculateReward: calculateRewardNear,
     stake: stakeNear,
+    getYieldPercentage: getYieldPercentageNear,
   },
   [COINS.usdt]: {
     calculateReward: calculateRewardUsdt,
     stake: stakeUsdt,
+    getYieldPercentage: getYieldPercentageUsdt,
   },
+}
+
+export const getYieldPercentage = async ({
+  viewMethod,
+  sessionContractId,
+  coin,
+}) => {
+  const yieldSource = await getYieldSource({
+    viewMethod,
+    contractId: sessionContractId,
+  })
+
+  return CONTRACT_ACTIONS[coin].getYieldPercentage({
+    yieldSourceContractId: yieldSource,
+    viewMethod,
+    sessionContractId,
+  })
 }
 
 export const getExpectedFinalReward = async ({

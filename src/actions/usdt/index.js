@@ -4,8 +4,33 @@ import {
   THIRTY_TGAS,
   THREE_HUNDRED_TGAS,
 } from '@/constants/nearAmounts'
+import { Big } from '@/utils/big'
 import { parseAmount } from '@/utils/near/parseAmount'
-import Big from 'big.js'
+
+export const getYieldPercentage = async ({
+  viewMethod,
+  yieldSourceContractId,
+  sessionContractId,
+}) => {
+  try {
+    const tokenAccountId = await getToken({
+      viewMethod,
+      contractId: sessionContractId,
+    })
+
+    const { apy } = await getAccountCoinPosition({
+      yieldSourceContractId,
+      accountId: sessionContractId,
+      viewMethod,
+      tokenAccountId,
+    })
+
+    return apy
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
 
 export const calculateReward = async ({
   viewMethod,
@@ -23,21 +48,57 @@ export const calculateReward = async ({
     }),
   ])
 
-  const yieldBalanceData = await viewMethod({
-    contractId: yieldSourceContractId,
-    method: 'get_account_all_positions',
-    args: { account_id: sessionContractId },
+  const { balance } = await getAccountCoinPosition({
+    yieldSourceContractId,
+    accountId: sessionContractId,
+    viewMethod,
+    tokenAccountId,
   })
 
-  const suppliedTokens = yieldBalanceData.supplied
-  const suppliedCoin = suppliedTokens?.find(
-    (token) => token.token_id === tokenAccountId,
-  )
-  const suppliedCoinBalance = suppliedCoin
-    ? BigInt(suppliedCoin.balance) / BigInt(10 ** 12)
-    : BigInt(0)
+  return Big(balance).minus(sessionAmount).toString()
+}
 
-  return Big(suppliedCoinBalance).minus(sessionAmount).toString()
+export const getAccountCoinPosition = async ({
+  viewMethod,
+  yieldSourceContractId,
+  accountId,
+  tokenAccountId,
+}) => {
+  try {
+    const accountAllPositions = await viewMethod({
+      contractId: yieldSourceContractId,
+      method: 'get_account_all_positions',
+      args: { account_id: accountId },
+    })
+
+    const suppliedTokens = accountAllPositions.supplied
+    const suppliedCoin = suppliedTokens
+      ? suppliedTokens.find((token) => token.token_id === tokenAccountId)
+      : null
+
+    const suppliedCoinBalance = suppliedCoin
+      ? BigInt(suppliedCoin.balance) / BigInt(10 ** 12)
+      : BigInt(0)
+
+    console.log('suppliedCoin: ', suppliedCoin)
+    return {
+      balance: suppliedCoinBalance,
+      apy: suppliedCoin ? formatBurrowAPY(suppliedCoin.apr) : 0,
+    }
+  } catch (err) {
+    console.error(err)
+    return null
+  }
+}
+
+function formatBurrowAPY(apy) {
+  const formattedAPY = Big(apy).times(100).toFixed(2)
+
+  if (parseFloat(formattedAPY) < 0.1) {
+    return '< 0.1'
+  }
+
+  return formattedAPY
 }
 
 export const stake = async ({
