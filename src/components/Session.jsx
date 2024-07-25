@@ -1,4 +1,10 @@
-import { cashout, claim, getAccumulatedReward, stake } from '@/actions'
+import {
+  cashout,
+  claim,
+  getAccumulatedReward,
+  getYieldPercentage,
+  stake,
+} from '@/actions'
 import { getPlayer, getPlayerChance, getSessionWinners } from '@/actions/common'
 import { COIN_DECIMALS, COIN_SYMBOLS } from '@/constants/coins'
 import { useNear } from '@/hooks'
@@ -42,6 +48,7 @@ export default function Session({ session, refetch }) {
       }),
     enabled: !!session,
   })
+
   // const { data: expectedFinalReward } = useQuery({
   //   queryKey: ['expected_final_reward', session.id],
   //   queryFn: () =>
@@ -165,6 +172,17 @@ export default function Session({ session, refetch }) {
     enabled: !!sessionId && !!accountId,
   })
 
+  const { data: yieldPercentage } = useQuery({
+    queryKey: ['yield_percentage', sessionId, coin],
+    queryFn: () =>
+      getYieldPercentage({
+        viewMethod,
+        sessionContractId: session.contractId,
+        coin,
+      }),
+    enabled: !!sessionId && !!coin,
+  })
+
   const isWinner = winners?.includes(accountId)
   const players = session?.players?._keys.length
   const CoinIcon = COIN_SYMBOLS[coin]
@@ -189,16 +207,21 @@ export default function Session({ session, refetch }) {
         >
           <AccordionButton w='full' _hover={{}}>
             <Box as='span' flex='1' textAlign='left'>
-              <Text
+              <HStack
                 w='full'
                 borderBottomWidth='1px'
-                pb={1}
                 borderColor={'cardBorder'}
                 fontWeight='light'
+                justifyContent='space-between'
+                alignItems={'center'}
               >
-                {coin.toUpperCase()} Pool #{Number(session.id) + 1}{' '}
-                {isEnded ? '(Ended)' : ''}
-              </Text>
+                <Text pb={1}>
+                  {coin.toUpperCase()} Pool #{Number(session.id) + 1}{' '}
+                  {isEnded ? '(Ended)' : ''}
+                </Text>
+
+                <Text color={'mainGreen'}>APY {yieldPercentage}%</Text>
+              </HStack>
               <Text fontSize={'x-large'} fontWeight={500}>
                 Total Deposit: {formatAmount(session.amount, coinDecimal)}{' '}
                 <CoinIcon />
