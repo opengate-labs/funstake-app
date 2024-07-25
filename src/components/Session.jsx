@@ -220,7 +220,9 @@ export default function Session({ session, refetch }) {
                   {isEnded ? '(Ended)' : ''}
                 </Text>
 
-                <Text color={'mainGreen'}>APY {yieldPercentage}%</Text>
+                {yieldPercentage && (
+                  <Text color={'mainGreen'}>APY {yieldPercentage}%</Text>
+                )}
               </HStack>
               <Text fontSize={'x-large'} fontWeight={500}>
                 Total Deposit: {formatAmount(session.amount, coinDecimal)}{' '}
