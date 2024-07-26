@@ -9,7 +9,7 @@ export function Timer({ expiryTimestamp, ...props }) {
   return (
     <Flex fontSize='26px'>
       <Text color='mainGreen' {...props}>
-        {days && <span>{days} Day{days > 1 && 's'} </span>}
+        {days ? <span>{days} Day{days > 1 && 's'} </span> : null}
         <span>{hours}</span>:<span>{minutes}</span>:<span>{seconds}</span>
       </Text>
     </Flex>
