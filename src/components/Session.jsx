@@ -295,8 +295,8 @@ export default function Session({ session, refetch }) {
 
             {session?.reward > 0 && (
               <Text>
-                Final Reward: {formatAmount(session.reward, coinDecimal)}{' '}
-                <CoinIcon />
+                Final Reward: {formatAmount(session.reward, coinDecimal, 6)}{' '}
+                <CoinIcon width='48px' />
               </Text>
             )}
           </AccordionPanel>
