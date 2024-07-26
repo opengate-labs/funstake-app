@@ -303,27 +303,37 @@ export default function Session({ session, refetch }) {
         </AccordionItem>
       </Accordion>
 
-      {isEnded ? (
+      {session.isFinalized && player && (
         <>
-          <Button isDisabled w={'full'} borderRadius={'32px'}>
-            Game is ended
-          </Button>
-
-          {session.isFinalized && player && (
-            <>
-              {isWinner ? 'You are a winner!' : 'You Lose!'}
-              <Button
-                borderRadius={'32px'}
-                w={'full'}
-                onClick={onClaim}
-                isDisabled={player?.isClaimed}
-              >
-                {player.isClaimed ? 'Already Claimed' : 'Claim'}
-              </Button>
-            </>
+          {isWinner ? (
+            <Text>
+              You are a winner!{' '}
+              <Text fontSize={24} as='span'>
+                &#127881;
+              </Text>
+            </Text>
+          ) : (
+            'You Lose!'
           )}
+          <Button
+            borderRadius={'32px'}
+            w={'full'}
+            onClick={onClaim}
+            isDisabled={player?.isClaimed}
+          >
+            {player.isClaimed ? 'Already Claimed' : 'Claim'}
+          </Button>
         </>
-      ) : (
+      )}
+
+      {((session.isFinalized && !player) ||
+        (isEnded && !session.isFinalized)) && (
+        <Button isDisabled w={'full'} borderRadius={'32px'}>
+          Game is ended
+        </Button>
+      )}
+
+      {!isEnded && !session.isFinalized && (
         <HStack w={'full'}>
           <Button
             onClick={onStake}
