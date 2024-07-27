@@ -18,13 +18,19 @@ import {
   AccordionPanel,
   Box,
   Button,
+  Flex,
   HStack,
   Text,
+  Tooltip,
+  useColorMode,
   VStack,
 } from '@chakra-ui/react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import { Timer } from './Timer'
+import ContractIcon from '@/icons/ContractIcon'
+import StatusBadge from './StatusBadge'
+import FormattedDate from './FormattedDate'
 
 // TODO: simplify mutations
 export default function Session({ session, refetch }) {
@@ -35,8 +41,12 @@ export default function Session({ session, refetch }) {
     signIn,
     sendMultipleTransactions,
   } = useNear()
+  const { colorMode } = useColorMode()
   const { coin } = useParams()
   const { openModal, closeModal } = useModal()
+  const NEAR_BLOCKS_URL = ` ${import.meta.env.VITE_APP_NEAR_BLOCKS_BASE_URL}/${
+    session.contractId
+  }`
   const { data: accumulatedReward } = useQuery({
     queryKey: ['accumulated_reward', session.id, coin],
     queryFn: () =>
@@ -199,45 +209,66 @@ export default function Session({ session, refetch }) {
       background='cardBg'
       borderRadius={'36px'}
     >
-      <Accordion allowToggle w='full'>
+      <Accordion allowToggle w='full' reduceMotion>
         <AccordionItem
           w='full'
           borderTopWidth={0}
           borderBottomWidth={'0 !important'}
         >
-          <AccordionButton w='full' _hover={{}}>
-            <Box as='span' flex='1' textAlign='left'>
-              <HStack
-                w='full'
-                borderBottomWidth='1px'
-                borderColor={'cardBorder'}
-                fontWeight='light'
-                justifyContent='space-between'
-                alignItems={'center'}
-              >
-                <Text pb={1}>
-                  {coin.toUpperCase()} Pool #{Number(session.id) + 1}{' '}
-                  {isEnded ? '(Ended)' : ''}
-                </Text>
+          <Box>
+            <HStack
+              w='full'
+              borderBottomWidth='1px'
+              borderColor={'cardBorder'}
+              fontWeight='light'
+              justifyContent='space-between'
+              alignItems={'center'}
+              pb={2}
+            >
+              <Tooltip label='View in Near Blocks'>
+                <Flex
+                  alignItems='center'
+                  cursor='pointer'
+                  as={'a'}
+                  target='_blank'
+                  href={NEAR_BLOCKS_URL}
+                  background='cardBorder'
+                  py={1}
+                  px={2}
+                  borderRadius={'36px'}
+                >
+                  <ContractIcon
+                    color={colorMode === 'light' ? 'black' : 'white'}
+                  />
+                  <Text mx={2}>
+                    {coin.toUpperCase()} Pool #{Number(session.id) + 1}{' '}
+                  </Text>
+                  <StatusBadge isEnded={isEnded} />
+                </Flex>
+              </Tooltip>
 
-                {yieldPercentage && (
-                  <Text color={'mainGreen'}>APY {yieldPercentage}%</Text>
-                )}
-              </HStack>
-              <Text fontSize={'x-large'} fontWeight={500}>
-                Total Deposit: {formatAmount(session.amount, coinDecimal)}{' '}
-                <CoinIcon />
-              </Text>
-              {isEnded ? (
-                <Text>
-                  End Date: {new Date(session.end / 1000000).toLocaleString()}
-                </Text>
-              ) : (
-                <Timer expiryTimestamp={session.end / 1000000} />
+              {yieldPercentage && (
+                <Text color={'mainGreen'}>APY {yieldPercentage}%</Text>
               )}
-            </Box>
-            <AccordionIcon />
-          </AccordionButton>
+            </HStack>
+
+            <AccordionButton w='full' _hover={{}}>
+              <Box as='span' flex='1' textAlign='left'>
+                <Text fontSize={'x-large'} fontWeight={500}>
+                  Total Deposit: {formatAmount(session.amount, coinDecimal, 3)}{' '}
+                  <CoinIcon />
+                </Text>
+                {isEnded ? (
+                  <Text>
+                    Ended At: <FormattedDate date={session.end} />
+                  </Text>
+                ) : (
+                  <Timer expiryTimestamp={session.end / 1000000} />
+                )}
+              </Box>
+              <AccordionIcon />
+            </AccordionButton>
+          </Box>
           <AccordionPanel pb={4}>
             {player && (
               <>
@@ -265,9 +296,7 @@ export default function Session({ session, refetch }) {
 
             {session.start ? (
               <Text>
-                {/* TODO: better date formatting */}
-                {/* Start: {format(new Date((BigInt(session.start) / 1000000n)).toString())} */}
-                Start: {new Date(session.start / 1000000).toLocaleString()}
+                Started: <FormattedDate date={session.start} />
               </Text>
             ) : null}
 

@@ -1,5 +1,4 @@
 import { useParams } from 'react-router-dom'
-import Header from '@/components/Header'
 import Session from '@/components/Session'
 import { useNear } from '../hooks'
 import { useQuery } from '@tanstack/react-query'
@@ -20,32 +19,29 @@ export default function PoolList() {
   })
 
   return (
-    <>
-      <Header />
-      <Container>
-        {isLoading ? (
-          <Center mt={14}>
-            <Spinner color={'mainGreen'} />
-          </Center>
-        ) : (
-          <>
-            {activeSessions?.length ? (
-              activeSessions.map((session, index) => (
-                <Session
-                  refetch={refetchActiveSessions}
-                  key={session.id}
-                  session={session}
-                  index={index}
-                />
-              ))
-            ) : (
-              <Text mt={10} textAlign={'center'} fontSize={'lg'}>
-                No Active Pools
-              </Text>
-            )}
-          </>
-        )}
-      </Container>
-    </>
+    <Container minH='90dvh'>
+      {isLoading ? (
+        <Center mt={14}>
+          <Spinner color={'mainGreen'} />
+        </Center>
+      ) : (
+        <>
+          {activeSessions?.length ? (
+            activeSessions.map((session, index) => (
+              <Session
+                refetch={refetchActiveSessions}
+                key={session.id}
+                session={session}
+                index={index}
+              />
+            ))
+          ) : (
+            <Text mt={10} textAlign={'center'} fontSize={'lg'}>
+              No Active Pools
+            </Text>
+          )}
+        </>
+      )}
+    </Container>
   )
 }

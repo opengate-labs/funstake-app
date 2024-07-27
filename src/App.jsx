@@ -6,6 +6,7 @@ import theme from './theme/theme'
 import { BrowserRouter } from 'react-router-dom'
 import Pages from './pages'
 import OpenInTGButton from './components/OpenInTGButton'
+import Layout from './components/Layout'
 
 const queryClient = new QueryClient()
 
@@ -16,7 +17,9 @@ function App() {
         <QueryClientProvider client={queryClient}>
           <WalletSelectorProvider>
             <ModalProvider>
-              <Pages />
+              <Layout>
+                <Pages />
+              </Layout>
               <OpenInTGButton />
             </ModalProvider>
           </WalletSelectorProvider>
