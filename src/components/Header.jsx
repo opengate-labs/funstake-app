@@ -20,9 +20,10 @@ export default function Header() {
   const { inTelegramApp } = useWalletSelector()
 
   const handleColorModeChange = () => {
-    localStorage.setItem('isFirstTimeChangedColorMode', 'true')
     toggleColorMode()
+    console.log('changing color mode to', !colorMode)
     if (inTelegramApp) {
+      localStorage.setItem('isFirstTimeChangedColorMode', 'true')
       window.Telegram.WebApp.setBackgroundColor(
         colorMode !== 'dark' ? '#1f1f1f' : '#F8F8F8',
       )

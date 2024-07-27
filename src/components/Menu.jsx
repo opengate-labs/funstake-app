@@ -64,6 +64,7 @@ export default function Menu({ isOpen, onClose, handleColorModeChange }) {
                 cursor='pointer'
                 onChange={handleColorModeChange}
                 isChecked={colorMode === 'dark'}
+                value={colorMode === 'dark'}
               >
                 Toggle Dark Mode
               </Switch>
