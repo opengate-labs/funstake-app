@@ -7,7 +7,7 @@ const theme = extendTheme({
     colors: {
       cardBg: {
         default: 'linear-gradient(0deg, #FFFFFF, #F4F4F4)',
-        _dark: 'linear-gradient(0deg, #343434, #111308)',
+        _dark: 'linear-gradient(0deg, #343434, #1f1f1f)',
       },
       cardBorder: {
         default: '#E5E5E5',
@@ -19,7 +19,7 @@ const theme = extendTheme({
       },
       mainBg: {
         default: '#F8F8F8',
-        _dark: '#111308',
+        _dark: '#1f1f1f',
       },
     },
   },
@@ -30,7 +30,10 @@ const theme = extendTheme({
   styles: {
     global: (props) => ({
       body: {
-        bg: mode('white', '#111308')(props),
+        bg: mode('white', '#1f1f1f')(props),
+      },
+      '*::-webkit-scrollbar': {
+        display: 'none',
       },
     }),
   },

@@ -11,6 +11,8 @@ import { finalizeAuthWithHereWallet } from '@/utils/near/finalizeAuthWithHereWal
 import { HereWallet } from '@here-wallet/core'
 import initCustomHereWalletSelector from './initCustomHereWalletSelector'
 import { Preloader } from '@/components/Preloader'
+import { useColorMode } from '@chakra-ui/react'
+import { changeTgColors } from '@/theme/changeTgColors'
 
 const initWalletSelector = async ({
   setAccounts,
@@ -102,7 +104,7 @@ export const WalletSelectorProvider = ({ children }) => {
   const [accounts, setAccounts] = useState([])
   const [loading, setLoading] = useState(true)
   const [inTelegramApp, setInTelegramApp] = useState(false)
-
+  const { setColorMode } = useColorMode()
   useEffect(() => {
     const isTelegram = !!window.Telegram?.WebApp.initData
     console.log('isTelegram:', isTelegram)
@@ -111,6 +113,21 @@ export const WalletSelectorProvider = ({ children }) => {
 
     if (isTelegram) {
       window.Telegram.WebApp.expand()
+      // TODO: WORKS ONLY ON BOT API > V7.7
+      // window.Telegram.WebApp.isVerticalSwipesEnabled = false
+      // window.Telegram.WebApp.disableVerticalSwipes()
+
+      const telegramColorMode = window.Telegram.WebApp.colorScheme
+      const isFirstTimeChangedColorMode = localStorage.getItem(
+        'isFirstTimeChangedColorMode',
+      )
+      const localColorMode = localStorage.getItem('chakra-ui-color-mode')
+      if (telegramColorMode && !isFirstTimeChangedColorMode) {
+        setColorMode(telegramColorMode)
+        changeTgColors(telegramColorMode === 'dark' ? '#1f1f1f' : '#F8F8F8')
+      } else {
+        changeTgColors(localColorMode === 'dark' ? '#1f1f1f' : '#F8F8F8')
+      }
       initHereForTelegram({
         setAccounts,
         setLoading,
