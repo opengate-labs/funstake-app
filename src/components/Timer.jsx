@@ -1,7 +1,7 @@
 import { Flex, Text } from '@chakra-ui/react'
 import { useTimer } from 'react-timer-hook'
 
-export function Timer({ expiryTimestamp, ...props }) {
+export default function Timer({ expiryTimestamp, ...props }) {
   const { seconds, minutes, hours, days } = useTimer({
     expiryTimestamp,
   })
