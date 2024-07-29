@@ -6,6 +6,7 @@ import {
   AccordionPanel,
   AccordionIcon,
   Accordion,
+  HStack,
 } from '@chakra-ui/react'
 import { COIN_SYMBOLS, COIN_DECIMALS } from '@/constants/coins'
 import { formatAmount } from '@/utils/near/formatAmount'
@@ -63,9 +64,12 @@ export default function SessionDetails({
           )}
 
           {winners?.length ? (
-            <Text fontSize={'large'} fontWeight={500} color={'mainGreen'}>
-              Winner: {winners.join(', ')}
-            </Text>
+            <HStack gap={1}>
+              <Text fontWeight={500} color={'mainGreen'}>
+                Winner: {winners.join(', ')}
+              </Text>
+              <Text fontSize={'large'}>&#x1F3C6;</Text>
+            </HStack>
           ) : null}
 
           {session.start && (
