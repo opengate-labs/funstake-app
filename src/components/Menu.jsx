@@ -68,7 +68,19 @@ export default function Menu({ isOpen, onClose, handleColorModeChange }) {
               >
                 Toggle Dark Mode
               </Switch>
-              <Box w='full'>
+              <VStack w='full'>
+                <Button
+                  w='full'
+                  as='a'
+                  href='https://docs.funstake.io'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  display='flex'
+                  alignItems='center'
+                  variant={'outline'}
+                >
+                  <Text>Docs</Text>
+                </Button>
                 <Button
                   w='full'
                   as='a'
@@ -82,7 +94,7 @@ export default function Menu({ isOpen, onClose, handleColorModeChange }) {
                   <Text mr={2}>Join us on Twitter</Text>
                   <BsTwitterX />
                 </Button>
-              </Box>
+              </VStack>
             </VStack>
             <Text fontSize='small' color='gray.500' mt={8} opacity='0.7'>
               Using Telegram Bot API v{window.Telegram?.WebApp.version}
