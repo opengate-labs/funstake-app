@@ -48,7 +48,7 @@ export default function Session({ session, refetch }) {
     session.contractId
   }`
   const { data: accumulatedReward } = useQuery({
-    queryKey: ['accumulated_reward', session.id, coin],
+    queryKey: ['accumulated_reward', session.contractId, session.id, coin],
     queryFn: () =>
       getAccumulatedReward({
         viewMethod,
@@ -148,7 +148,7 @@ export default function Session({ session, refetch }) {
   const isEnded = session?.end < Date.now() * 1000000
 
   const { data: winners } = useQuery({
-    queryKey: ['session_winners', sessionId],
+    queryKey: ['session_winners', session.contractId, session.id, coin],
     queryFn: () =>
       getSessionWinners({
         viewMethod,
@@ -159,7 +159,7 @@ export default function Session({ session, refetch }) {
   })
 
   const { data: chance, refetch: refetchChance } = useQuery({
-    queryKey: ['chance', sessionId, accountId],
+    queryKey: ['chance', session.contractId, sessionId, coin, accountId],
     queryFn: () =>
       getPlayerChance({
         viewMethod,
@@ -171,7 +171,7 @@ export default function Session({ session, refetch }) {
   })
 
   const { data: player, refetch: refetchPlayer } = useQuery({
-    queryKey: ['player', sessionId, accountId],
+    queryKey: ['player', session.contractId, sessionId, coin, accountId],
     queryFn: () =>
       getPlayer({
         viewMethod,
@@ -183,7 +183,7 @@ export default function Session({ session, refetch }) {
   })
 
   const { data: yieldPercentage } = useQuery({
-    queryKey: ['yield_percentage', sessionId, coin],
+    queryKey: ['yield_percentage', session.contractId, sessionId, coin],
     queryFn: () =>
       getYieldPercentage({
         viewMethod,

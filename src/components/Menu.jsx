@@ -10,7 +10,6 @@ import {
   Switch,
   useColorMode,
   VStack,
-  Box,
   Flex,
 } from '@chakra-ui/react'
 import { useNear } from '../hooks'
