@@ -1,4 +1,5 @@
 import { getMetadata, getToken, getYieldSource } from '@/actions/common'
+import { ONE_YEAR_TS } from '@/constants/dates'
 import {
   ONE_YOCTO_DEPOSIT,
   THIRTY_TGAS,
@@ -32,7 +33,7 @@ export const getYieldPercentage = async ({
   }
 }
 
-export const calculateReward = async ({
+export const getAccumulatedReward = async ({
   viewMethod,
   sessionContractId,
   sessionAmount,
@@ -56,6 +57,58 @@ export const calculateReward = async ({
   })
 
   return Big(balance).minus(sessionAmount).toString()
+}
+
+export const getExpectedReward = async ({
+  viewMethod,
+  sessionContractId,
+  sessionAmount,
+  sessionEnd,
+}) => {
+  const sessionTimeLeft = Big(sessionEnd)
+    .minus(+new Date() * 1e6)
+    .toString()
+
+  const accumulatedReward = await getAccumulatedReward({
+    viewMethod,
+    sessionContractId,
+    sessionAmount,
+  })
+
+  const yieldSourceContractId = await getYieldSource({
+    viewMethod,
+    contractId: sessionContractId,
+  })
+
+  const APY = await getYieldPercentage({
+    viewMethod,
+    yieldSourceContractId,
+    sessionContractId,
+  })
+
+  const expectedReward = calculateExpectedReward({
+    accumulatedReward,
+    currentDeposit: sessionAmount,
+    timeLeftInNanoseconds: sessionTimeLeft,
+    APY,
+  })
+
+  return expectedReward
+}
+
+function calculateExpectedReward({
+  accumulatedReward,
+  currentDeposit,
+  timeLeftInNanoseconds,
+  APY,
+}) {
+  // Convert timeLeft from nanoseconds to years
+  const years = Number(timeLeftInNanoseconds) / Number(ONE_YEAR_TS)
+
+  // Calculate the reward
+  const reward = currentDeposit * (APY / 100) * years
+
+  return Big(accumulatedReward).plus(reward).round().toString()
 }
 
 export const getAccountCoinPosition = async ({

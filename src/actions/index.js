@@ -1,25 +1,29 @@
 import { COINS } from '@/constants/coins'
 import { ONE_YOCTO_DEPOSIT } from '@/constants/nearAmounts'
 import {
-  calculateReward as calculateRewardNear,
+  getAccumulatedReward as getAccumulatedRewardNear,
   stake as stakeNear,
   getYieldPercentage as getYieldPercentageNear,
+  getExpectedReward as getExpectedRewardNear,
 } from './near'
 import {
-  calculateReward as calculateRewardUsdt,
+  getAccumulatedReward as getAccumulatedRewardUsdt,
   stake as stakeUsdt,
   getYieldPercentage as getYieldPercentageUsdt,
+  getExpectedReward as getExpectedRewardUsdt,
 } from './usdt'
 import { getYieldSource } from './common'
 
 const CONTRACT_ACTIONS = {
   [COINS.near]: {
-    calculateReward: calculateRewardNear,
+    getAccumulatedReward: getAccumulatedRewardNear,
+    getExpectedReward: getExpectedRewardNear,
     stake: stakeNear,
     getYieldPercentage: getYieldPercentageNear,
   },
   [COINS.usdt]: {
-    calculateReward: calculateRewardUsdt,
+    getAccumulatedReward: getAccumulatedRewardUsdt,
+    getExpectedReward: getExpectedRewardUsdt,
     stake: stakeUsdt,
     getYieldPercentage: getYieldPercentageUsdt,
   },
@@ -42,13 +46,19 @@ export const getYieldPercentage = async ({
   })
 }
 
-export const getExpectedFinalReward = async ({
+export const getExpectedReward = async ({
   viewMethod,
-  accountId,
-  currentTimestamp,
+  sessionContractId,
+  sessionEnd,
+  coin,
+  sessionAmount
 }) => {
-  // TODO: for near atm
-  return calculateRewardNear({ viewMethod, accountId, currentTimestamp })
+  return CONTRACT_ACTIONS[coin].getExpectedReward({
+    viewMethod,
+    sessionContractId,
+    sessionEnd,
+    sessionAmount
+  })
 }
 
 export const getAccumulatedReward = async ({
@@ -59,7 +69,7 @@ export const getAccumulatedReward = async ({
 }) => {
   const currentTimestamp = Date.now() * 1e6
 
-  return CONTRACT_ACTIONS[coin].calculateReward({
+  return CONTRACT_ACTIONS[coin].getAccumulatedReward({
     viewMethod,
     currentTimestamp,
     sessionContractId,

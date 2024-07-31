@@ -2,9 +2,11 @@ import { useQuery } from '@tanstack/react-query'
 import { getAccumulatedReward, getYieldPercentage } from '@/actions'
 import { useNear } from './useNear'
 import { getSessionWinners } from '@/actions/common'
+import { getExpectedReward } from '../actions'
 
 export function useSessionData({ session, coin }) {
-  const { contractId, id: sessionId, end } = session
+  const { contractId, id: sessionId, end, isFinalized } = session
+
   const { viewMethod } = useNear()
 
   const { data: accumulatedReward } = useQuery({
@@ -16,7 +18,20 @@ export function useSessionData({ session, coin }) {
         coin,
         sessionAmount: session.amount,
       }),
-    enabled: !!session,
+    enabled: !!session && !isFinalized,
+  })
+
+  const { data: expectedReward } = useQuery({
+    queryKey: ['expected_reward', contractId, sessionId, coin],
+    queryFn: () =>
+      getExpectedReward({
+        viewMethod,
+        sessionContractId: contractId,
+        coin,
+        sessionAmount: session.amount,
+        sessionEnd: session.end,
+      }),
+    enabled: !!session && !isFinalized,
   })
 
   const { data: winners } = useQuery({
@@ -27,7 +42,7 @@ export function useSessionData({ session, coin }) {
         sessionId,
         contractId,
       }),
-    enabled: !!sessionId,
+    enabled: !!sessionId && isFinalized,
   })
 
   const { data: yieldPercentage } = useQuery({
@@ -43,5 +58,11 @@ export function useSessionData({ session, coin }) {
 
   const isEnded = end < Date.now() * 1000000
 
-  return { accumulatedReward, winners, yieldPercentage, isEnded }
+  return {
+    accumulatedReward,
+    winners,
+    yieldPercentage,
+    isEnded,
+    expectedReward,
+  }
 }

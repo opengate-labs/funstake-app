@@ -19,11 +19,16 @@ export default function SessionDetails({
   chance,
   winners,
   accumulatedReward,
+  expectedReward,
   coin,
 }) {
   const CoinIcon = COIN_SYMBOLS[coin]
   const coinDecimal = COIN_DECIMALS[coin]
   const isEnded = session.end < Date.now() * 1000000
+  const players = session.players?._keys.length
+  const showAccumulatedReward =
+    !session.isFinalized && accumulatedReward && players
+  const showExpectedReward = !session.isFinalized && expectedReward && players
 
   return (
     <Accordion allowToggle w='full' reduceMotion>
@@ -78,15 +83,23 @@ export default function SessionDetails({
             </Text>
           )}
 
-          <Text>Players: {session.players?._keys.length}</Text>
+          <Text>Players: {players}</Text>
 
-          {!session.isFinalized &&
-          accumulatedReward &&
-          session.players?._keys.length ? (
+          {showAccumulatedReward ? (
             <Text>
               Accumulated Prize:{' '}
               <Text as='span' color='mainGreen'>
                 ~{formatAmount(accumulatedReward, coinDecimal, 6)}{' '}
+                <CoinIcon width='48px' />
+              </Text>
+            </Text>
+          ) : null}
+
+          {showExpectedReward ? (
+            <Text>
+              Expected Prize:{' '}
+              <Text as='span' color='mainGreen'>
+                ~{formatAmount(expectedReward, coinDecimal, 6)}{' '}
                 <CoinIcon width='48px' />
               </Text>
             </Text>
