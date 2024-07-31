@@ -11,7 +11,7 @@ export default function Session({ session, refetch }) {
   const { contractId } = session
   const { coin } = useParams()
   const { accountId } = useNear()
-  const { accumulatedReward, winners, yieldPercentage, isEnded } =
+  const { accumulatedReward, winners, yieldPercentage, isEnded, expectedReward } =
     useSessionData({ session, coin })
 
   const { player, chance, onStake, onClaim, onCashout } = usePlayerData({
@@ -44,6 +44,7 @@ export default function Session({ session, refetch }) {
         chance={chance}
         winners={winners}
         accumulatedReward={accumulatedReward}
+        expectedReward={expectedReward}
         coin={coin}
       />
 
