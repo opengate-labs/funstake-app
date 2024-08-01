@@ -4,10 +4,12 @@ export const NetworkId = import.meta.env.VITE_APP_NETWORK_ID
 
 export const NEAR_CONTRACTS = import.meta.env.VITE_APP_NEAR_CONTRACT_IDS.split(' ')
 export const USDT_CONTRACTS = import.meta.env.VITE_APP_USDT_CONTRACT_IDS.split(' ')
+export const USDC_CONTRACTS = import.meta.env.VITE_APP_USDC_CONTRACT_IDS.split(' ')
 
 export const CONTRACTS = {
   [COINS.near]: NEAR_CONTRACTS,
   [COINS.usdt]: USDT_CONTRACTS,
+  [COINS.usdc]: USDC_CONTRACTS,
 }
 
 export const WALLETS_PREFIX = {
