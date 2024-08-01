@@ -31,6 +31,7 @@ import { Timer } from './Timer'
 import ContractIcon from '@/icons/ContractIcon'
 import StatusBadge from './StatusBadge'
 import FormattedDate from './FormattedDate'
+import CoinIcon from './CoinIcon'
 
 // TODO: simplify mutations
 export default function Session({ session, refetch }) {
@@ -195,7 +196,7 @@ export default function Session({ session, refetch }) {
 
   const isWinner = winners?.includes(accountId)
   const players = session?.players?._keys.length
-  const CoinIcon = COIN_SYMBOLS[coin]
+  // const CoinIcon = COIN_SYMBOLS[coin]
   const coinDecimal = COIN_DECIMALS[coin]
 
   return (
@@ -256,7 +257,7 @@ export default function Session({ session, refetch }) {
               <Box as='span' flex='1' textAlign='left'>
                 <Text fontSize={'x-large'} fontWeight={500}>
                   Total Deposit: {formatAmount(session.amount, coinDecimal, 3)}{' '}
-                  <CoinIcon />
+                  <CoinIcon coin={coin} width='24px' withName />
                 </Text>
                 {isEnded ? (
                   <Text>
@@ -274,7 +275,7 @@ export default function Session({ session, refetch }) {
               <>
                 <Text fontSize={'large'} fontWeight={500} color={'mainGreen'}>
                   My Deposit: {formatAmount(player.amount, coinDecimal)}{' '}
-                  <CoinIcon />
+                  <CoinIcon coin={coin} w='24px' withName />
                 </Text>
                 {chance && Number(chance) ? (
                   <Text
@@ -307,7 +308,7 @@ export default function Session({ session, refetch }) {
                 Accumulated Prize:{' '}
                 <Text as='span' color='mainGreen'>
                   ~{formatAmount(accumulatedReward, coinDecimal, 6)}{' '}
-                  <CoinIcon width='48px' />
+                  <CoinIcon width='48px' coin={coin} withName />
                 </Text>
               </Text>
             ) : null}
@@ -325,7 +326,7 @@ export default function Session({ session, refetch }) {
             {session?.reward > 0 && (
               <Text>
                 Final Reward: {formatAmount(session.reward, coinDecimal, 6)}{' '}
-                <CoinIcon width='48px' />
+                <CoinIcon width='18px' coin={coin} withName />
               </Text>
             )}
           </AccordionPanel>
