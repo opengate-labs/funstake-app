@@ -3,8 +3,10 @@ import { Big } from '@/utils/big'
 import {
   getPlayer,
   getStakeStorageCost,
+  getStorageBalanceOf,
   getYieldSource,
 } from '@/actions/common'
+import { ONE_YEAR_TS } from '@/constants/dates'
 
 export const getYieldPercentage = async ({
   viewMethod,
@@ -44,43 +46,57 @@ export const getYieldInfo = async ({ viewMethod, yieldSource, accountId }) => {
   }
 }
 
-export const calculateReward = async ({
+export const getAccumulatedReward = async ({
   viewMethod,
   sessionContractId,
-  // currentTimestamp,
 }) => {
-  // const now = Big(currentTimestamp)
-
-  console.log('Contract id : ', sessionContractId)
   const yieldSource = await getYieldSource({
     viewMethod,
     contractId: sessionContractId,
   })
 
-  console.log('yieldSource: ', yieldSource)
+  const { accrued } = await getYieldInfo({
+    viewMethod,
+    yieldSource,
+    accountId: sessionContractId,
+  })
 
-  const [{ accrued } /*, balanceOf */] = await Promise.all([
+  return accrued.toString()
+}
+
+export const getExpectedReward = async ({
+  viewMethod,
+  sessionContractId,
+  sessionEnd,
+}) => {
+  const yieldSource = await getYieldSource({
+    viewMethod,
+    contractId: sessionContractId,
+  })
+  const [{ accrued, lastAccrualTs, apyValue }, balanceOf] = await Promise.all([
     getYieldInfo({
       viewMethod,
       yieldSource,
       accountId: sessionContractId,
     }),
-    // getStorageBalanceOf({
-    //   accountId: sessionContractId,
-    //   contractId: yieldSource,
-    //   viewMethod,
-    // }),
+    getStorageBalanceOf({
+      accountId: sessionContractId,
+      contractId: yieldSource,
+      viewMethod,
+    }),
   ])
 
-  // TODO: Postponed dynamic calculation of expected rewards
-  // const result = Big(balanceOf)
-  //   .div(1000)
-  //   .times(apyValue)
-  //   .div(ONE_YEAR_TS)
-  //   .times(now.minus(lastAccrualTs))
+  const timeLeftFromLastAccrual = sessionEnd - lastAccrualTs
+  const years = timeLeftFromLastAccrual / ONE_YEAR_TS
 
-  // return Big(accrued).plus(result).toString()
-  return accrued.toString()
+  const expectedAdditionalReward = Big(balanceOf)
+    .times(apyValue)
+    .div(10000)
+    .times(years)
+
+  const totalExpectedReward = Big(accrued).plus(expectedAdditionalReward)
+
+  return totalExpectedReward.round().toString()
 }
 
 export const stake = async ({
