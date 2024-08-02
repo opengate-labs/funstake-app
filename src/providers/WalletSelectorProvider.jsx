@@ -114,8 +114,8 @@ export const WalletSelectorProvider = ({ children }) => {
     if (isTelegram) {
       window.Telegram.WebApp.expand()
       // TODO: WORKS ONLY ON BOT API > V7.7
-      // window.Telegram.WebApp.isVerticalSwipesEnabled = false
-      // window.Telegram.WebApp.disableVerticalSwipes()
+      window.Telegram.WebApp.isVerticalSwipesEnabled = false
+      window.Telegram.WebApp.disableVerticalSwipes()
 
       const telegramColorMode = window.Telegram.WebApp.colorScheme
       const isFirstTimeChangedColorMode = localStorage.getItem(
