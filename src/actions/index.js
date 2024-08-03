@@ -27,6 +27,12 @@ const CONTRACT_ACTIONS = {
     stake: stakeUsdt,
     getYieldPercentage: getYieldPercentageUsdt,
   },
+  [COINS.usdc]: {
+    getAccumulatedReward: getAccumulatedRewardUsdt,
+    getExpectedReward: getExpectedRewardUsdt,
+    stake: stakeUsdt,
+    getYieldPercentage: getYieldPercentageUsdt,
+  },
 }
 
 export const getYieldPercentage = async ({
