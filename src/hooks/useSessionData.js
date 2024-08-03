@@ -11,6 +11,9 @@ export function useSessionData({ session, coin }) {
 
   const { data: accumulatedReward } = useQuery({
     queryKey: ['accumulated_reward', contractId, sessionId, coin],
+    refetchInterval: 10000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     queryFn: () =>
       getAccumulatedReward({
         viewMethod,
@@ -23,6 +26,9 @@ export function useSessionData({ session, coin }) {
 
   const { data: expectedReward } = useQuery({
     queryKey: ['expected_reward', contractId, sessionId, coin],
+    refetchInterval: 10000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     queryFn: () =>
       getExpectedReward({
         viewMethod,
