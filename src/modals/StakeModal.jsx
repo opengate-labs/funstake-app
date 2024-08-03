@@ -47,6 +47,7 @@ export default function StakeModal({
 
       return getBalance({ accountId })
     },
+    refetchInterval: 5000,
     enabled: !!accountId,
   })
 
@@ -67,7 +68,7 @@ export default function StakeModal({
   }
 
   return (
-    <Modal isCentered isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent
         as={'form'}
