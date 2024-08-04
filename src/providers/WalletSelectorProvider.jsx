@@ -119,7 +119,7 @@ export const WalletSelectorProvider = ({ children }) => {
       window.Telegram.WebApp.isVerticalSwipesEnabled = false
       window.Telegram.WebApp.disableVerticalSwipes()
       window.Telegram.WebApp.BackButton.onClick(() => {
-        navigate('-1')
+        navigate('/')
       })
 
       const telegramColorMode = window.Telegram.WebApp.colorScheme
