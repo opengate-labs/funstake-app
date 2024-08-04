@@ -10,7 +10,7 @@ export default function CheckCoinPool({ children }) {
     if (isExist) {
       const isTelegram = !!window.Telegram?.WebApp.initData
       if (isTelegram) {
-        window.Telegram.BackButton.show()
+        window.Telegram.WebApp.BackButton.show()
       }
     }
   }, [isExist])
