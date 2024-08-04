@@ -7,7 +7,7 @@ export default function Home() {
   useEffect(() => {
     const isTelegram = !!window.Telegram?.WebApp.initData
     if (isTelegram) {
-      window.Telegram.BackButton.hide()
+      window.Telegram.WebApp.BackButton.hide()
     }
   }, [])
   return (
