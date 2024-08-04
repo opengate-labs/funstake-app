@@ -13,6 +13,7 @@ import initCustomHereWalletSelector from './initCustomHereWalletSelector'
 import { Preloader } from '@/components/Preloader'
 import { useColorMode } from '@chakra-ui/react'
 import { changeTgColors } from '@/theme/changeTgColors'
+import { useNavigate } from 'react-router-dom'
 
 const initWalletSelector = async ({
   setAccounts,
@@ -99,6 +100,7 @@ export const WalletSelectorContext = createContext({
 })
 
 export const WalletSelectorProvider = ({ children }) => {
+  const navigate = useNavigate()
   const [selector, setSelector] = useState(null)
   const [modal, setModal] = useState(null)
   const [accounts, setAccounts] = useState([])
@@ -116,6 +118,9 @@ export const WalletSelectorProvider = ({ children }) => {
       // TODO: WORKS ONLY ON BOT API > V7.7
       window.Telegram.WebApp.isVerticalSwipesEnabled = false
       window.Telegram.WebApp.disableVerticalSwipes()
+      window.Telegram.WebApp.BackButton.onClick(() => {
+        navigate('-1')
+      })
 
       const telegramColorMode = window.Telegram.WebApp.colorScheme
       const isFirstTimeChangedColorMode = localStorage.getItem(

@@ -1,8 +1,15 @@
 import { Container, Wrap } from '@chakra-ui/react'
 import { COINS_LIST } from '@/constants/coins'
 import { CoinItem } from '@/components/CoinItem'
+import { useEffect } from 'react'
 
 export default function Home() {
+  useEffect(() => {
+    const isTelegram = !!window.Telegram?.WebApp.initData
+    if (isTelegram) {
+      window.Telegram.BackButton.hide()
+    }
+  }, [])
   return (
     <Container>
       <Wrap justify='center' spacing={6}>
